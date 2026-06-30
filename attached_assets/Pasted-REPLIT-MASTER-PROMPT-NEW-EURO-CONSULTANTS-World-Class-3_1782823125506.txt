@@ -1,0 +1,455 @@
+REPLIT MASTER PROMPT — NEW EURO CONSULTANTS
+World-Class 3D Visa Consultancy Website (v2 — production-grade)
+Paste this ENTIRE document as the first message in a new Replit Agent project.
+Do not summarize, do not skip sections, do not substitute libraries.
+1. CLIENT PROFILE (real, verified)
+Business: New Euro Consultants Travel & Tours
+Founder/CEO: S. Mustafa (public handle: @worldofmustafa)
+Years: 18 years of excellency
+Address: Office No. 17-18, 1st Floor, Lord Trade Centre, F-11 Markaz, Islamabad, Pakistan (near Najeeb Pharmacy)
+Hours: Mon–Fri 9:00 AM – 4:00 PM (Sat & Sun closed)
+Phone / WhatsApp: +92 314 535 2222
+Tagline: "A Step Before Embassy"
+Positioning: Premium, transparent, no hidden fees, embassy-policy-grade eligibility assessment.
+Services (existing, must all appear on new site):
+Visit Visas — UK 🇬🇧, USA 🇺🇸, Canada 🇨🇦, Australia 🇦🇺, Turkey 🇹🇷, Schengen states 🇪🇺
+Air Ticketing (international & domestic)
+Hotel Booking (worldwide)
+Travel Insurance
+Travel & Tours services (custom packages)
+Document assessment & eligibility checking per embassy policy
+Interview preparation guidance
+Required documents they ask for (use in eligibility form): Passport, CNIC, FRC (Family Registration Certificate), source of income proof, bank statements, property documents (if any), family circumstances.
+Social channels (must appear in footer + sticky social rail):
+Instagram: @neweuroconsultants and @worldofmustafa1
+TikTok: @worldofmustafa
+Facebook: worldofmustafa
+YouTube: @neweuroconsultants
+2. STRATEGIC BRIEF — what we are building
+A next-generation 3D visa-consultancy website that beats every competitor in Pakistan (yugo.pk, malikexpress.com, babaaztravels.com, euroimmiconsultant.pk, ninjatravels.pk). Reference quality bar: apple.com, emirates.com, igloo.inc, lusion.co, monopo.london, active-theory.com. Aesthetic: premium embassy-grade trust + cinematic 3D + Pakistani-friendly clarity.
+The site must do 5 jobs:
+Instantly build trust (18 years, licensed, real office, real reviews)
+Convert visitors into leads (free eligibility check, WhatsApp CTA, callback request)
+Educate (per-country visa pages with requirements, processing time, success stories)
+Sell tours/tickets/hotels/insurance as cross-sell
+Be fully admin-controlled (no developer needed to change a comma)
+3. TECH STACK (LOCKED — do not substitute anything)
+Layer
+Choice
+Reason
+Framework
+Next.js 14 (App Router, RSC, Server Actions)
+SEO + speed + SSR
+Language
+TypeScript strict
+No runtime surprises
+Styling
+Tailwind CSS v3 + shadcn/ui (Radix)
+Speed + accessibility
+3D
+react-three-fiber + @react-three/drei + three.js + @react-three/postprocessing
+Industry standard
+Shaders
+GLSL custom shaders for hero gradient mesh
+Unique look
+Animation
+Framer Motion + GSAP + Lenis smooth scroll
+Cinematic motion
+ORM
+Drizzle ORM + PostgreSQL
+Lightweight, Railway-friendly
+Auth
+Lucia Auth v3 (admin only, session-based)
+No NextAuth bloat
+Storage
+S3-compatible abstraction (local dev / R2 / S3 prod) via @aws-sdk/client-s3
+Portability
+Email
+Resend API
+Modern, reliable
+Forms
+React Hook Form + Zod
+Type-safe
+Rich text
+Tiptap
+Best modern editor
+i18n
+next-intl (English + Urdu, RTL aware)
+Production-grade
+Icons
+lucide-react + @tabler/icons-react
+Variety
+Fonts
+Satoshi Variable (display) + Inter (body) + Noto Nastaliq Urdu (Urdu)
+Premium feel
+Charts
+Recharts (admin dashboard)
+Simple, SSR-friendly
+Carousel
+Embla Carousel
+Performant
+Toast
+sonner
+Beautiful
+Pkg mgr
+pnpm
+Fast
+Deploy
+Railway via Docker
+Portable
+Banned: Replit DB, Replit Auth, Replit Object Storage, Prisma, NextAuth, MUI, Bootstrap, jQuery, any CDN-only script imports for app logic.
+4. DESIGN SYSTEM — exact specifications
+4.1 Color palette
+Css
+Default theme: dark mode (cinematic). Light toggle available top-right.
+4.2 Typography scale (clamp-based, fluid)
+Code
+4.3 Spacing & radii
+Spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 56, 80, 120, 160 px (Tailwind defaults work)
+Radii: sm 8px, md 14px, lg 22px, xl 32px, 2xl 48px, full 9999px
+Card radius default: 22px (lg)
+4.4 Shadow system (multi-layer for 3D depth)
+Css
+4.5 Motion language (frame-perfect spec)
+Default easing: cubic-bezier(0.16, 1, 0.3, 1) (out-expo, used everywhere)
+Snappy (buttons, micro): cubic-bezier(0.34, 1.56, 0.64, 1) (slight overshoot)
+Hero entrance: 1.2s, stagger 0.08s
+Section reveal on scroll: 0.8s, fade + translateY(40px → 0), stagger children 0.06s
+Card hover: scale 1.02, lift -4px, shadow → shadow-float, 0.4s
+3D tilt: max 6deg X, 8deg Y, perspective 1000px, spring stiffness 150
+Page transitions: shared element morph for hero CTA → page anchor; 0.6s
+Cursor: custom 12px dot + 32px outline ring (desktop only), lerp 0.15
+Smooth scroll: Lenis with lerp: 0.1, wheelMultiplier: 1
+Magnetic buttons: pull radius 80px, max offset 16px, spring 200/30
+4.6 Visual language — the "wow" effects (UNIQUE — not seen on competitors)
+3D Earth in hero (react-three-fiber): photoreal Earth with bump map, real-time clouds layer rotating slower, pulsing dots on destination countries (UK, USA, Canada, Australia, Turkey, Schengen group, Pakistan as origin), animated arc lines from Pakistan to each destination drawing in sequence.
+Floating 3D passport book — appears in "How It Works" section, opens page-by-page on scroll (GSAP ScrollTrigger), each page = one step.
+Floating boarding-pass card — Air Ticketing section, tilts with cursor, has perforated edge SVG, barcode at bottom.
+3D hotel keycard — Hotel Booking section, swipes into a card-reader animation on hover.
+Liquid metal gold seal — "18 Years of Excellence" badge, custom shader, animated highlight rotates around seal.
+Animated mesh gradient (custom WebGL shader) — hero background, slowly morphing blue → purple → gold mix.
+Particle field — floating golden specks, parallax 3 layers, depth-of-field blur on back layer.
+Magnetic CTAs with gold-rim glow on hover.
+Embassy stamps — animated rubber-stamp impression on testimonial cards ("APPROVED" stamp drops in with bounce + ink-spread).
+Live counter — visas processed, with abacus-like digit flip.
+Country flip cards — front: 3D flag waving (shader), back: visa details. Hover flips.
+Glass nav — frosted backdrop blur 24px, dynamic tint based on section below.
+Scroll-driven globe rotation — globe rotates as user scrolls through "Countries We Serve".
+Cinematic section dividers — animated SVG path draws between sections.
+Embassy seal cursor on hero — cursor temporarily becomes a gold wax-seal stamp.
+5. INFORMATION ARCHITECTURE
+5.1 Public site map
+Code
+5.2 Admin map
+Code
+6. HOME PAGE — section by section (most detailed)
+SECTION 1 — Top announcement bar (8px tall)
+Background: gradient from-gold-500 via-gold-400 to-gold-500
+Marquee text (editable in admin): "🛂 Free Eligibility Check · ☎️ +92 314 535 2222 · 📍 F-11 Markaz Islamabad · ⭐ 18 Years of Excellence"
+Auto-scrolls right-to-left, pauses on hover
+Dismissible (X button), persists in cookie
+SECTION 2 — Sticky Navbar (72px tall, becomes 56px after scroll 100px)
+Left: Logo (custom SVG — gold "NE" monogram inside a circular embassy-seal style emblem with subtle 3D rotation on hover) + wordmark "New Euro Consultants"
+Center: Nav links — Home · Visas ▾ · Services ▾ · Tours · About · Success Stories · Blog · Contact
+Right:
+Language switcher EN | اردو (flag icons)
+Theme toggle (sun/moon icon, animated)
+"Free Consultation" gold magnetic button
+Style: Glass blur 24px, border-bottom 1px rgba(255,255,255,0.08), dynamic background tint
+Mobile: Hamburger → full-screen drawer with staggered link reveal, 3D rotating globe in background of drawer
+SECTION 3 — HERO (the showstopper — 100dvh)
+Layout: split, but layered with 3D overlap
+Background layer 1: admin-uploaded video (autoplay, muted, loop, max 50MB, mp4/webm). Fallback: admin-uploaded photo with Ken Burns slow zoom. Default seed: cinematic airport / passport stamping b-roll.
+Background layer 2: dark gradient overlay linear-gradient(180deg, rgba(5,14,31,0.85) 0%, rgba(10,26,51,0.5) 40%, rgba(5,14,31,0.95) 100%)
+Background layer 3: custom WebGL shader mesh gradient (slow morphing blue→purple→gold), 30% opacity, blend mode screen
+Background layer 4: subtle noise texture SVG, 4% opacity
+Foreground left (60%):
+Pre-headline (gold caps tracking-widest 13px): "✦ 18 YEARS · LICENSED · ISLAMABAD ✦"
+Headline (Display XL, animated word-by-word from bottom with mask reveal):
+"A Step Before Embassy." (the word "Embassy" in gold gradient)
+Subhead (Body L, max 540px): "Premium visa consultancy for UK, USA, Canada, Australia, Turkey & Schengen. Real eligibility checks. No hidden fees. Embassy-grade documentation."
+CTA row:
+Primary: "Free Eligibility Check" — gold filled, magnetic, gold glow, arrow icon that slides on hover
+Secondary: "Talk on WhatsApp" — glass outlined, WhatsApp icon, pulse dot
+Trust strip below CTAs (single row, dividers between items):
+"🛡️ Licensed · ⭐ 4.9/5 (500+) · ✅ 99% Success · 🌍 50+ Countries · 🗓️ Since 2007"
+Foreground right (40%):
+3D rotating Earth (react-three-fiber), 480px on desktop
+Real geography texture, normal map for bumps, slow rotation
+Glowing pulse dots on: UK, USA, Canada, Australia, Turkey, France (representing Schengen), Pakistan (origin, gold)
+Animated arc lines from Pakistan → each destination, drawing in sequence with gold glow
+Soft orbital ring around Earth
+Atmosphere shader (cyan glow on rim)
+Bottom-center: animated scroll indicator (mouse icon with bouncing dot inside) + caption "Scroll to explore"
+Bottom strip: thin line of partner/embassy/airline logos in grayscale (PIA, Emirates, Qatar Airways, Turkish Airlines, embassy logos), 60% opacity, monochrome
+SECTION 4 — Floating sticky right-rail (entire page)
+Vertical strip on right edge, 56px wide
+Icons stacked: WhatsApp (green pulse), Phone (gold), Instagram, TikTok, YouTube, Facebook
+Each icon hover: slides label tooltip out left
+WhatsApp click → wa.me/923145352222?text=Hi%20New%20Euro%20Consultants...
+SECTION 5 — Floating WhatsApp bubble (bottom-right)
+64px circle, WhatsApp green, gold ring, gentle bob animation
+Click opens chat
+Optional "Online now ✓" small label
+SECTION 6 — "Why New Euro" stats strip
+Dark surface, full-width band
+4 KPI cards in row (mobile: 2x2):
+18+ Years of Excellence
+5,000+ Visas Processed
+99% Success Rate
+50+ Countries Covered
+Numbers animate count-up on scroll into view
+Each card: glass, 3D tilt on hover, gold accent line below number
+Icons rendered as small Lottie animations (passport, stamp, globe, calendar)
+SECTION 7 — "Countries We Serve" — 3D country cards
+Section heading: "Your Destination, Our Expertise" (gradient)
+Subhead: "Specialized visa pathways for 6 major regions"
+Grid 3x2 (desktop), 2x3 (tablet), 1x6 stacked (mobile)
+6 cards: UK, USA, Canada, Australia, Turkey, Schengen
+Each card:
+Aspect 4:5, radius 22px, glass with country flag waving in 3D background (shader)
+Country name large (gold gradient)
+Visa types listed (Tourist, Business, Family Visit)
+"Avg processing: X days"
+"Success rate: 98%"
+Hover: card lifts, flag waves faster, "View Details →" appears
+Click → /visa/[country]
+3D effect: on cursor hover the card tilts in 3D space (Framer Motion useMotionValue)
+SECTION 8 — Services row (cross-sell)
+Section heading: "Beyond Visas — Complete Travel"
+4 service cards (3D glass, gold icon, hover lift):
+✈️ Air Ticketing — "Best fares to 200+ destinations"
+🏨 Hotel Booking — "Verified hotels worldwide"
+🛡️ Travel Insurance — "Schengen-approved coverage"
+🗺️ Tour Packages — "Curated Europe, Umrah, Asia tours"
+Each card click → respective /services/... page
+SECTION 9 — "How It Works" — 4-step process with 3D passport
+Heading: "Visa Approved in 4 Simple Steps"
+Layout: left column = 4 numbered steps (large gold numerals 01–04), right column = 3D passport book that opens to a different page as user scrolls (GSAP ScrollTrigger pin)
+Steps:
+Free Eligibility Check — submit basic info, we assess
+Document Preparation — we guide every doc, embassy-grade
+Application Filing — appointment booked, application submitted
+Visa Stamped — celebrate, fly with confidence
+Each step has gold icon, short paragraph, micro-stat ("avg 2 hours")
+Animated vertical line connects steps, fills as user scrolls
+The 3D passport rotates and flips pages in sync with scrolled step
+SECTION 10 — Eligibility Check teaser (mini interactive)
+Heading: "Are You Eligible? Find Out in 60 Seconds"
+3D card with form preview
+Quick 3-question demo (country → visa type → travel purpose)
+CTA: "Start Full Assessment" → opens full /eligibility-check multi-step wizard
+Side image: 3D floating gold checkmark with sparkle particles
+SECTION 11 — Featured Tour Packages carousel
+Heading: "Curated Travel Experiences"
+Embla carousel, 3 cards visible on desktop
+Each tour card: hero image (Ken Burns on hover), title, days/nights, price (with old-price strikethrough if discounted), inclusions chips, "View Itinerary →"
+Categories pill filter: All · Umrah · Europe · Asia · Middle East · Turkey
+Editable in admin
+SECTION 12 — Success Stories — video wall
+Heading: "Real Visas. Real People."
+3-col masonry of testimonial cards (mix of text + photo + video thumbnails)
+Click video → opens 9:16 vertical modal (TikTok-style player)
+Each card has animated "APPROVED" embassy stamp in corner
+Below grid: avatars row + "Read all 500+ reviews →"
+SECTION 13 — Live Embassy Updates (admin-editable feed)
+Heading: "Latest from the Embassies"
+3-column cards: visa policy changes, fee updates, appointment availability
+Each card: source flag, date, headline, short summary, "Read more"
+Useful as content authority + SEO juice
+SECTION 14 — Blog preview
+Heading: "Insights for Smart Travelers"
+3 latest posts, magazine layout (1 large left + 2 stacked right)
+Each card: cover image, category pill, title, read time, date
+SECTION 15 — FAQ accordion
+Heading: "Questions, Answered"
+6 most important FAQs (rest on /faq)
+Custom accordion: gold + icon morphs to ×, slow elegant expand
+Schema markup (FAQPage) for SEO
+SECTION 16 — Office location + map
+Heading: "Visit Us in F-11 Markaz"
+Two-column: left = contact info + hours + phone + WhatsApp + email, right = embedded Google Map (dark mode styled to match site)
+Below: 3 photos of the office (gallery preview)
+SECTION 17 — Final CTA / Newsletter
+Full-bleed dark band with mesh gradient bg + floating particles
+Heading: "Ready to Take Off?"
+Subhead: "Get your free eligibility check today. No commitment."
+CTA: gold magnetic "Start My Application"
+Below, smaller: newsletter input → "Get embassy updates monthly"
+SECTION 18 — Footer
+4-column grid + bottom bar:
+Col 1: Logo + tagline + social icons (animated on hover)
+Col 2: Visas — quick links to each country page
+Col 3: Services — Air Ticketing, Hotels, Insurance, Tours
+Col 4: Company — About, Why Us, Process, Success Stories, Blog, Contact
+Col 5: Office — address, hours, phone, WhatsApp, email, map link
+Bottom bar: "© 2026 New Euro Consultants. All rights reserved. · Designed by [your handle] · Privacy · Terms"
+Subtle large background watermark: "NEW EURO" giant outline text
+7. PER-COUNTRY VISA PAGE (template)
+Hero: country name in gold, country flag waving in 3D bg, headline "Your [Country] Visa, Done Right"
+Sections:
+Visa types offered (cards): Tourist, Business, Family Visit, Medical, etc.
+Eligibility criteria (checklist with icons)
+Required documents (animated checklist with stamp effect when each item checks)
+Step-by-step process timeline
+Processing time + fees table
+Success rate stat + 3 testimonials from that country
+FAQs specific to that country
+CTA: "Start [Country] Application"
+8. ELIGIBILITY CHECK (multi-step wizard — KEY LEAD MAGNET)
+Route: /eligibility-check
+Steps (one per screen, slide animation between):
+Destination country
+Visa purpose (visit, business, family, medical, study)
+Age range
+Marital + family status
+Employment status + monthly income range
+Bank balance range (last 6 months)
+Property ownership (yes/no)
+Previous travel history (which countries)
+Previous visa refusals (yes/no, which)
+Contact details (name, phone, email)
+On submit:
+Save to eligibility_submissions table
+Send admin email + Resend
+WhatsApp notify admin (optional — Twilio API later)
+Show result: scored 0–100 with color band (green/yellow/red)
+Show personalized recommendations
+Show CTA "Book a free consultation"
+UI: each step has gold progress bar, back/next, validation, 3D mascot character on side that reacts (thumbs-up, thinking, etc.) — use a simple lottie animation set.
+9. ADMIN PANEL — full spec
+Dashboard
+4 KPI cards: leads today, leads this month, conversions, top-performing visa
+Chart: leads over last 30 days (Recharts area chart, gold gradient fill)
+Recent activity feed (latest 10 leads, latest submissions)
+Quick action buttons: "Add Tour Package", "Edit Hero", "View Leads"
+Hero Manager
+Grid of hero slots (multiple supported, only one active)
+Each slot: thumbnail, type badge (photo/video), active toggle
+Edit modal: upload media (drag-drop), headline, subhead, primary CTA text + link, secondary CTA text + link, overlay opacity slider, preview button (opens fullscreen preview)
+Services / Visas / Tours CRUD
+Table with search, filter, sort, pagination
+Add/Edit page: form with all fields + Tiptap rich editor + image gallery uploader + SEO meta fields
+Drag-drop reorder
+Publish / Draft toggle
+Slug auto-generated from title, editable
+Testimonials
+Table view + card grid view
+Approval workflow: new → approved → published
+Each entry: name, photo, country, visa type, message, video URL (optional), rating
+Leads Inbox
+Table with status pipeline (new → contacted → converted → closed)
+Filters: source, country, visa type, date range
+Each lead row expandable to show full submission
+Quick actions: WhatsApp link, call link, mark status, add note
+Export CSV button
+Bulk actions
+Site Settings
+Tabs: General · Contact · Social · SEO · Footer · WhatsApp · Hero defaults
+All fields persist to site_settings (key-value JSON)
+Users
+List admin users
+Add user (email + temp password emailed)
+Change own password
+2FA optional (later)
+10. DATABASE SCHEMA (Drizzle, full)
+Ts
+All migrations via drizzle-kit. Auto-migrate on Railway boot.
+11. SEO & PERFORMANCE — non-negotiable
+Per-page metadata (title, description, OG, Twitter card, canonical)
+JSON-LD structured data: Organization, LocalBusiness, Service, FAQPage, BreadcrumbList, Review
+Dynamic sitemap.xml (Next.js metadata route)
+robots.txt
+Open Graph image generation via next/og (dynamic per page)
+Lighthouse target: 95+ all categories
+Core Web Vitals: LCP < 2.0s, CLS < 0.05, INP < 200ms
+Image optimization: next/image with AVIF/WebP
+Lazy-load 3D components below the fold (dynamic import, ssr: false)
+Lazy-load video, intersection observer
+Font subsetting + preload
+ISR for content pages (revalidate: 3600)
+Brotli via Railway proxy
+Bundle analyzer in CI
+12. STORAGE ABSTRACTION
+Ts
+Upload endpoint /api/upload — admin-only, multipart, max 50MB, MIME whitelist.
+13. ENV VARS (.env.example)
+Code
+14. RAILWAY DEPLOYMENT
+Dockerfile (multi-stage):
+Stage 1: node:20-alpine deps install with pnpm + corepack
+Stage 2: build with NEXT_TELEMETRY_DISABLED=1
+Stage 3: runner with Next.js standalone output, non-root user, copy .next/standalone, public, uploads
+Healthcheck: wget -qO- http://localhost:3000/api/health || exit 1
+railway.json:
+Json
+scripts/migrate-and-start.js:
+Run drizzle-kit push (auto-migrate)
+Run seed if users table empty (creates owner from ADMIN_EMAIL/PASSWORD)
+Then node server.js (Next standalone)
+15. PROJECT STRUCTURE (final)
+Code
+16. EXECUTION ORDER (Replit Agent must follow)
+Init monorepo. Install ALL deps in one go. Configure TS strict, Tailwind, shadcn, ESLint, Prettier.
+Build database schema (Drizzle) + migrations + seed.
+Build storage abstraction + upload endpoint.
+Build auth (Lucia) + admin login page + protected middleware.
+Build admin layout + dashboard + Site Settings (most critical — content drives everything).
+Build all admin CRUDs (hero, services, visas, tours, testimonials, gallery, team, blog, FAQ, leads).
+Build public layout shell (Navbar, Footer, WhatsApp float, Social rail, Custom cursor, Lenis).
+Build Hero with 3D Earth FIRST (priority).
+Build remaining home sections in order (sections 1–18 above).
+Build per-country visa template page + 6 countries.
+Build services pages, tours pages, eligibility wizard.
+Build about, contact, blog, gallery, FAQ pages.
+i18n EN + Urdu with RTL.
+SEO: metadata, sitemap, robots, structured data, OG images.
+Dockerfile + railway.json + migrate-and-start script.
+Comprehensive seed: 6 countries, 10 visa types, 8 tour packages, 6 services, 12 testimonials, 8 FAQs, 4 blog posts, hero default slide.
+README with full setup + deploy + how-to-edit-content + admin credentials.
+Manual QA: mobile + tablet + desktop + 4K + dark + light + EN + UR.
+17. RULES FOR YOU (Replit Agent) — read this 3 times
+✅ DO:
+Build EXACTLY what is specified — no creative substitutions
+Use the exact colors, fonts, spacing, motion specs above
+Build full 3D Earth in hero — this is non-negotiable
+Make every text editable from admin (zero hardcoded copy on public pages)
+Make every image uploadable from admin
+Test build before declaring done
+Add prefers-reduced-motion fallbacks
+Implement signature verification on upload endpoint
+Hash passwords with argon2 (Lucia default)
+Add CSRF protection on admin mutations
+❌ DO NOT:
+Use Replit Database, Auth, or Object Storage
+Use Prisma, NextAuth, MUI, Bootstrap, jQuery
+Hardcode any URL containing repl.co
+Skip the 3D scenes — they ARE the website
+Use placeholder images — use gradient SVG fallbacks until admin uploads
+Use any type without comment justification
+Skip animations to "save time"
+Add features not in this spec
+Ask me for design decisions — they are all already made above
+18. ACCEPTANCE CRITERIA
+The project is done when ALL of these are true:
+[ ] pnpm install && pnpm dev works locally with zero errors
+[ ] All 18 home sections render correctly
+[ ] 3D Earth in hero rotates with destination dots and arcs
+[ ] Floating passport in How It Works flips pages on scroll
+[ ] Admin can log in and upload a hero video that appears live
+[ ] Admin can add a new tour and it appears in carousel
+[ ] Contact form submits, saves to DB, emails admin
+[ ] Eligibility wizard completes all 10 steps and returns a score
+[ ] WhatsApp float button opens correct chat
+[ ] Site renders perfectly at 360px, 768px, 1280px, 1920px, 2560px
+[ ] Dark + light themes both work
+[ ] English + Urdu (with RTL) both work
+[ ] Lighthouse score 90+ on home page (mobile)
+[ ] docker build succeeds
+[ ] README covers env, run, deploy, admin reset
+[ ] No console errors, no hydration warnings
+19. START
+Confirm understanding of the stack and design system in ONE short paragraph (max 5 sentences).
+Then begin Execution Order step 1.
+Do not ask for design decisions — every decision is above.
+Build the whole thing.
