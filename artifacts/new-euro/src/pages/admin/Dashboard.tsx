@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { data: user, isError, isLoading: userLoading } = useGetMe();
-  const { data: dashboard, isLoading: dashLoading } = useGetAdminDashboard({ query: { enabled: !!user } });
+  const { data: dashboard, isLoading: dashLoading } = useGetAdminDashboard({ query: { enabled: !!user, queryKey: ["admin-dashboard"] } });
 
   useEffect(() => {
     if (isError) {

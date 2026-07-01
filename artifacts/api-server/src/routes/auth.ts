@@ -19,7 +19,7 @@ router.post("/login", async (req, res) => {
   if (!valid) {
     return res.status(401).json({ error: "Invalid credentials" });
   }
-  (req.session as any).userId = user.id;
+  req.session.userId = user.id;
   return res.json({ id: user.id, email: user.email, name: user.name, createdAt: user.createdAt.toISOString() });
 });
 
@@ -32,7 +32,7 @@ router.post("/logout", (req, res) => {
 
 // GET /api/auth/me
 router.get("/me", async (req, res) => {
-  const userId = (req.session as any).userId;
+  const userId = req.session.userId;
   if (!userId) {
     return res.status(401).json({ error: "Not authenticated" });
   }
