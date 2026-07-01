@@ -1,7 +1,7 @@
 import { useListServices } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Plane, Building, ShieldCheck, MapMap } from "lucide-react";
+import { Plane, Building, ShieldCheck, Map } from "lucide-react";
 
 export default function ServicesRow() {
   const { data: services, isLoading } = useListServices();
@@ -14,7 +14,7 @@ export default function ServicesRow() {
       case 'plane': return <Plane className="w-8 h-8 text-primary" />;
       case 'hotel': return <Building className="w-8 h-8 text-primary" />;
       case 'insurance': return <ShieldCheck className="w-8 h-8 text-primary" />;
-      case 'tour': return <MapMap className="w-8 h-8 text-primary" />;
+      case 'tour': return <Map className="w-8 h-8 text-primary" />;
       default: return <Plane className="w-8 h-8 text-primary" />;
     }
   };
