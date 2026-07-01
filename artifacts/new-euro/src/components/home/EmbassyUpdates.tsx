@@ -1,37 +1,57 @@
-import { useListEmbassyUpdates } from "@workspace/api-client-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { format } from "date-fns";
+import { motion } from "framer-motion";
+import { Link } from "wouter";
+
+const updates = [
+  { id: 1, flag: "🇬🇧", date: "Feb 10, 2026", title: "UK Updates Student Visa Financial Requirements", desc: "The UK Home Office has announced new maintenance funds rules for international students applying for the Tier 4 visa." },
+  { id: 2, flag: "🇨🇦", date: "Jan 28, 2026", title: "Canada Processing Times Reduced", desc: "IRCC has successfully cleared backlogs, reducing average processing times for visitor visas from Pakistan by 15 days." },
+  { id: 3, flag: "🇪🇺", date: "Jan 15, 2026", title: "Schengen Digital Visa Implementation", desc: "Select Schengen states have begun transitioning to a digital visa sticker system for short-stay tourist applications." },
+];
 
 export default function EmbassyUpdates() {
-  const { data: updates, isLoading } = useListEmbassyUpdates();
-
-  if (isLoading || !updates?.length) return null;
-
   return (
     <section className="py-24 bg-background">
-      <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-display font-bold mb-4">Latest from the Embassies</h2>
-          <p className="text-muted-foreground">Stay informed with the newest regulations and processing times.</p>
+      <div className="container">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-display-l mb-2"
+            >
+              Latest from the <span className="gold-gradient-text">Embassies</span>
+            </motion.h2>
+            <p className="text-muted-foreground">Stay informed on policy changes that affect your travel plans.</p>
+          </div>
+          <Link href="/blog" className="text-sm font-semibold text-primary hover:text-white transition-colors">
+            View All Updates →
+          </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {updates.slice(0, 3).map((update) => (
-            <Card key={update.id} className="bg-card border-border hover:border-primary/30 transition-colors group">
-              <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <span className="text-4xl drop-shadow-md">{update.flag}</span>
-                <div>
-                  <h3 className="font-bold text-lg leading-tight">{update.country}</h3>
-                  <time className="text-xs text-muted-foreground uppercase tracking-wider">
-                    {format(new Date(update.publishedAt), 'MMM dd, yyyy')}
-                  </time>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <h4 className="font-display font-bold text-xl mb-3 group-hover:text-primary transition-colors">{update.headline}</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">{update.summary}</p>
-              </CardContent>
-            </Card>
+        <div className="grid md:grid-cols-3 gap-6">
+          {updates.map((update, i) => (
+            <motion.div
+              key={update.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="glass-card p-6 rounded-2xl group hover:-translate-y-1 transition-transform border border-white/5 hover:border-primary/30 flex flex-col"
+            >
+              <div className="flex items-center gap-3 mb-4 border-b border-white/10 pb-4">
+                <span className="text-3xl">{update.flag}</span>
+                <span className="text-xs font-mono text-muted-foreground">{update.date}</span>
+              </div>
+              <h3 className="text-lg font-bold font-display mb-3 text-white group-hover:text-primary transition-colors line-clamp-2">
+                {update.title}
+              </h3>
+              <p className="text-sm text-white/60 mb-6 line-clamp-3">
+                {update.desc}
+              </p>
+              <Link href="/blog" className="mt-auto text-xs font-bold uppercase tracking-wider text-primary group-hover:translate-x-1 transition-transform inline-block w-fit">
+                Read More →
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -1,0 +1,11 @@
+{
+  "nav": {
+    "home": "Home",
+    "visas": "Visas",
+    "services": "Services",
+    "tours": "Tours",
+    "about": "About",
+    "contact": "Contact",
+    "free_consultation": "Free Consultation"
+  }
+}

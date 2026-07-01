@@ -1,53 +1,90 @@
-import { useGetSiteSettings } from "@workspace/api-client-react";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { RiWhatsappFill, RiMapPinFill, RiTimeFill, RiMailFill, RiPhoneFill } from "react-icons/ri";
 
 export default function OfficeMap() {
-  const { data: settings } = useGetSiteSettings();
-
-  const contactInfo = [
-    { icon: <MapPin className="w-5 h-5" />, label: "Visit Us", value: settings?.address || "Office No. 17-18, 1st Floor, Lord Trade Centre, F-11 Markaz, Islamabad" },
-    { icon: <Phone className="w-5 h-5" />, label: "Call Us", value: settings?.phone || "+92 314 5352222" },
-    { icon: <Mail className="w-5 h-5" />, label: "Email", value: settings?.email || "info@neweuroconsultants.com" },
-    { icon: <Clock className="w-5 h-5" />, label: "Working Hours", value: settings?.hours || "Mon - Sat: 10:00 AM - 6:00 PM" },
-  ];
-
   return (
-    <section className="py-24 bg-background">
-      <div className="container mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-          <div>
-            <h2 className="text-4xl font-display font-bold mb-4">Visit Our Office</h2>
-            <p className="text-muted-foreground mb-10 text-lg">Step into our premium consultation center in the heart of Islamabad to discuss your visa journey with our experts.</p>
-            
-            <div className="space-y-8">
-              {contactInfo.map((info, i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="w-12 h-12 rounded-full bg-secondary/30 text-primary flex items-center justify-center shrink-0 border border-border">
-                    {info.icon}
-                  </div>
+    <section className="py-24 bg-card border-t border-white/5">
+      <div className="container">
+        <div className="text-center mb-16">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-display-l mb-4"
+          >
+            Visit Us in <span className="gold-gradient-text">F-11 Markaz</span>
+          </motion.h2>
+          <p className="text-muted-foreground">Located in the heart of Islamabad for your convenience.</p>
+        </div>
+
+        <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-stretch">
+          
+          {/* Contact Info Card */}
+          <div className="glass-card rounded-2xl p-8 flex flex-col gap-8 h-full">
+            <div>
+              <h3 className="text-2xl font-display font-bold mb-6 text-white">Contact Info</h3>
+              
+              <ul className="space-y-6">
+                <li className="flex gap-4">
+                  <RiMapPinFill className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-1">{info.label}</h3>
-                    <p className="text-lg font-medium">{info.value}</p>
+                    <strong className="block text-white mb-1">Office Address</strong>
+                    <span className="text-muted-foreground text-sm">Office No. 17-18, 1st Floor, Lord Trade Centre, F-11 Markaz, Islamabad, Pakistan</span>
                   </div>
-                </div>
-              ))}
+                </li>
+                
+                <li className="flex gap-4">
+                  <RiTimeFill className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <strong className="block text-white mb-1">Working Hours</strong>
+                    <span className="text-muted-foreground text-sm">Monday – Friday: 9:00 AM – 4:00 PM<br/>Sat & Sun: Closed</span>
+                  </div>
+                </li>
+                
+                <li className="flex gap-4">
+                  <RiPhoneFill className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <strong className="block text-white mb-1">Phone Line</strong>
+                    <a href="tel:+923145352222" className="text-muted-foreground text-sm hover:text-primary transition-colors">+92 314 535 2222</a>
+                  </div>
+                </li>
+
+                <li className="flex gap-4">
+                  <RiMailFill className="w-6 h-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <strong className="block text-white mb-1">Email</strong>
+                    <a href="mailto:info@neweuroconsultants.com" className="text-muted-foreground text-sm hover:text-primary transition-colors">info@neweuroconsultants.com</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="mt-auto pt-8 border-t border-white/10">
+              <a href="https://wa.me/923145352222" target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#20bd5a] text-white py-4 rounded-xl font-bold transition-colors">
+                <RiWhatsappFill className="w-6 h-6" /> Chat on WhatsApp
+              </a>
             </div>
           </div>
-          
-          <div className="h-[500px] rounded-2xl overflow-hidden border border-border bg-muted relative grayscale hover:grayscale-0 transition-all duration-700">
-            {/* Dark themed google map embedded via iframe */}
+
+          {/* Map Embed Container */}
+          <div className="glass-card rounded-2xl overflow-hidden min-h-[400px] lg:min-h-full border-white/10 relative p-1 group">
+            {/* The grayscale/invert filters make the map match the dark theme */}
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.46781254332!2d72.98379221147573!3d33.6826019364121!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbe3812586cc9%3A0xc4864ab1a0eb1e8a!2sLord%20Trade%20Centre!5e0!3m2!1sen!2s!4v1709405625406!5m2!1sen!2s" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.4396!2d73.0551!3d33.7295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbff2a3bfc0b3%3A0x4e2e2e2e2e2e2e2e!2sF-11+Markaz%2C+Islamabad!5e0!3m2!1sen!2spk!4v1234567890123" 
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 
-              allowFullScreen={true} 
+              allowFullScreen={false} 
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0"
-              title="Office Location"
+              className="rounded-xl w-full h-full object-cover filter brightness-[0.8] contrast-[1.2] opacity-80 group-hover:opacity-100 group-hover:brightness-100 group-hover:contrast-100 transition-all duration-700 invert-[0.9] hue-rotate-180"
+              title="New Euro Consultants Location Map"
             ></iframe>
+            
+            {/* Overlay hint */}
+            <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10 rounded-xl"></div>
           </div>
+
         </div>
       </div>
     </section>

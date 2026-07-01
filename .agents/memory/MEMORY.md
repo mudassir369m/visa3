@@ -1,0 +1,3 @@
+- [New Euro project structure](new-euro-project.md) — pnpm monorepo: frontend at artifacts/new-euro, API at artifacts/api-server, Drizzle schema at lib/db, OpenAPI spec at lib/api-spec
+- [WebGL in Replit preview](webgl-replit.md) — Three.js WebGL fails in headless screenshot env; set server.hmr.overlay:false in vite.config.ts and wrap Canvas in WebGLErrorBoundary
+- [pnpm workspace @types resolution](pnpm-types.md) — @types/* packages must be explicit devDependencies of each artifact; pnpm virtual store path not auto-discovered by tsc

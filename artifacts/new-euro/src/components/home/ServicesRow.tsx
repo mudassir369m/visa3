@@ -1,49 +1,54 @@
-import { useListServices } from "@workspace/api-client-react";
-import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Plane, Building, ShieldCheck, Map } from "lucide-react";
+import { Link } from "wouter";
+import { PlaneTakeoff, Hotel, ShieldCheck, Map } from "lucide-react";
+
+const services = [
+  { icon: PlaneTakeoff, title: "Air Ticketing", desc: "Best fares to 200+ destinations globally.", link: "/services#air" },
+  { icon: Hotel, title: "Hotel Booking", desc: "Verified accommodations worldwide.", link: "/services#hotel" },
+  { icon: ShieldCheck, title: "Travel Insurance", desc: "Schengen-approved medical coverage.", link: "/services#insurance" },
+  { icon: Map, title: "Tour Packages", desc: "Curated Europe, Umrah, & Asia tours.", link: "/tours" }
+];
 
 export default function ServicesRow() {
-  const { data: services, isLoading } = useListServices();
-
-  if (isLoading) return null;
-  
-  // Provide fallback icons if db doesn't match perfectly
-  const getIcon = (iconName: string) => {
-    switch (iconName.toLowerCase()) {
-      case 'plane': return <Plane className="w-8 h-8 text-primary" />;
-      case 'hotel': return <Building className="w-8 h-8 text-primary" />;
-      case 'insurance': return <ShieldCheck className="w-8 h-8 text-primary" />;
-      case 'tour': return <Map className="w-8 h-8 text-primary" />;
-      default: return <Plane className="w-8 h-8 text-primary" />;
-    }
-  };
-
   return (
-    <section className="py-24 bg-secondary/10">
-      <div className="container mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-          <div className="max-w-2xl">
-            <h2 className="text-4xl font-display font-bold mb-4">Beyond Visas</h2>
-            <p className="text-muted-foreground">Complete travel solutions tailored for your peace of mind.</p>
-          </div>
-          <Link href="/services" className="text-primary font-medium hover:underline mt-4 md:mt-0">
-            View All Services →
-          </Link>
+    <section className="py-20 relative bg-background border-t border-white/5" id="services">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+      
+      <div className="container">
+        <div className="mb-12">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-display font-bold"
+          >
+            Beyond Visas — <span className="gold-gradient-text">Complete Travel</span>
+          </motion.h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services?.slice(0,4).map((service) => (
-            <Link key={service.id} href={`/services/${service.slug}`}>
-              <motion.div 
-                whileHover={{ y: -8 }}
-                className="bg-card/50 backdrop-blur-sm border border-border p-8 rounded-xl h-full flex flex-col hover:border-primary/50 transition-colors"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {services.map((svc, i) => (
+            <Link key={i} href={svc.link}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="group glass-card p-8 rounded-2xl h-full cursor-pointer hover:-translate-y-2 transition-all duration-300 hover:shadow-glow-blue relative overflow-hidden"
               >
-                <div className="mb-6 p-4 rounded-full bg-background inline-flex self-start border border-border shadow-inner">
-                  {getIcon(service.icon)}
+                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors"></div>
+                
+                <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center mb-6 text-primary group-hover:scale-110 group-hover:bg-primary/10 transition-all border border-white/10 relative z-10">
+                  <svc.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">{service.title}</h3>
-                <p className="text-muted-foreground text-sm flex-1">{service.description}</p>
+                
+                <h3 className="text-xl font-display font-bold mb-3 text-white group-hover:text-primary transition-colors relative z-10">
+                  {svc.title}
+                </h3>
+                
+                <p className="text-sm text-muted-foreground relative z-10">
+                  {svc.desc}
+                </p>
               </motion.div>
             </Link>
           ))}

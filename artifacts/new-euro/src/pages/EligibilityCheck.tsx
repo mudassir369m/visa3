@@ -1,311 +1,417 @@
-import { useSubmitEligibility } from "@workspace/api-client-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
+import { useState, useReducer } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ChevronRight, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
+import { 
+  RiPlaneLine, RiBriefcaseLine, RiGroupLine, RiHospitalLine, RiBookLine,
+  RiArrowLeftLine, RiArrowRightLine, RiCheckLine, RiWhatsappFill
+} from "react-icons/ri";
 
-// Combine the schemas for all steps
-const schema = z.object({
-  destinationCountry: z.string().min(1, "Required"),
-  visaPurpose: z.string().min(1, "Required"),
-  ageRange: z.string().optional(),
-  maritalStatus: z.string().optional(),
-  employmentStatus: z.string().optional(),
-  monthlyIncome: z.string().optional(),
-  bankBalance: z.string().optional(),
-  propertyOwnership: z.boolean().optional(),
-  previousTravel: z.array(z.string()).default([]),
-  previousRefusals: z.boolean().optional(),
-  name: z.string().min(2, "Name is required"),
-  phone: z.string().min(5, "Phone is required"),
-  email: z.string().email("Valid email required"),
-});
+// Types & State
+type State = {
+  country: string;
+  purpose: string;
+  age: string;
+  marital: string;
+  employment: string;
+  income: string;
+  balance: string;
+  property: string;
+  refusal: string;
+  contact: { name: string; phone: string; email: string };
+};
 
-type FormValues = z.infer<typeof schema>;
+const initialState: State = {
+  country: "", purpose: "", age: "", marital: "", employment: "",
+  income: "", balance: "", property: "", refusal: "", contact: { name: "", phone: "", email: "" }
+};
+
+type Action = { type: 'SET_FIELD'; field: keyof State; value: any };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_FIELD': return { ...state, [action.field]: action.value };
+    default: return state;
+  }
+}
+
+// Data definitions
+const countries = [
+  { id: "uk", flag: "🇬🇧", name: "UK" }, { id: "usa", flag: "🇺🇸", name: "USA" },
+  { id: "canada", flag: "🇨🇦", name: "Canada" }, { id: "australia", flag: "🇦🇺", name: "Australia" },
+  { id: "turkey", flag: "🇹🇷", name: "Turkey" }, { id: "schengen", flag: "🇪🇺", name: "Schengen" }
+];
+
+const purposes = [
+  { id: "visit", icon: RiPlaneLine, name: "Tourism / Visit" },
+  { id: "business", icon: RiBriefcaseLine, name: "Business / Conference" },
+  { id: "family", icon: RiGroupLine, name: "Family Visit" },
+  { id: "medical", icon: RiHospitalLine, name: "Medical Treatment" },
+  { id: "study", icon: RiBookLine, name: "Short Study" }
+];
+
+const employments = ["Employed (Private)", "Employed (Govt)", "Self-employed", "Business Owner", "Retired", "Student", "Unemployed"];
+const incomes = ["Under 100k PKR", "100k - 300k PKR", "300k - 500k PKR", "500k - 1M PKR", "Above 1M PKR"];
+const balances = ["Under 500k PKR", "500k - 1.5M PKR", "1.5M - 3M PKR", "3M - 5M PKR", "Above 5M PKR"];
 
 export default function EligibilityCheck() {
   const [step, setStep] = useState(1);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [result, setResult] = useState<{score: number, type: 'strong'|'moderate'|'weak'} | null>(null);
+
   const totalSteps = 10;
-  const submitElig = useSubmitEligibility();
-  const [result, setResult] = useState<any>(null);
+  const progress = ((step - 1) / totalSteps) * 100;
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      destinationCountry: "",
-      visaPurpose: "",
-      previousTravel: [],
-      propertyOwnership: false,
-      previousRefusals: false,
-      name: "",
-      phone: "",
-      email: ""
-    },
-    mode: "onChange"
-  });
+  const nextStep = () => {
+    if (step < totalSteps) setStep(s => s + 1);
+    else calculateResult();
+  };
+  const prevStep = () => setStep(s => Math.max(1, s - 1));
 
-  const nextStep = async () => {
-    // Validate current step fields before proceeding
-    let fieldsToValidate: any[] = [];
-    if (step === 1) fieldsToValidate = ["destinationCountry"];
-    else if (step === 2) fieldsToValidate = ["visaPurpose"];
-    else if (step === 10) fieldsToValidate = ["name", "phone", "email"];
-    
-    const isValid = await form.trigger(fieldsToValidate as any);
-    if (isValid) setStep((s) => Math.min(s + 1, totalSteps));
+  const calculateResult = () => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      let score = 50; // base score
+      
+      // Calculate basic logic based on selections
+      if (state.employment.includes("Business") || state.employment === "Employed (Govt)") score += 15;
+      if (state.income.includes("500k") || state.income.includes("1M")) score += 15;
+      if (state.balance.includes("3M") || state.balance.includes("5M")) score += 15;
+      if (state.property === "yes") score += 10;
+      if (state.refusal === "yes") score -= 20;
+
+      score = Math.min(100, Math.max(0, score));
+
+      setResult({
+        score,
+        type: score >= 80 ? 'strong' : score >= 50 ? 'moderate' : 'weak'
+      });
+      setIsSubmitting(false);
+      setStep(11); // Result screen
+    }, 1500);
   };
 
-  const prevStep = () => setStep((s) => Math.max(s - 1, 1));
-
-  const onSubmit = (data: FormValues) => {
-    submitElig.mutate({ data }, {
-      onSuccess: (res) => {
-        setResult(res);
-      },
-      onError: () => {
-        toast.error("An error occurred submitting your assessment. Please try again.");
-      }
-    });
+  const isStepValid = () => {
+    switch(step) {
+      case 1: return !!state.country;
+      case 2: return !!state.purpose;
+      case 3: return !!state.age;
+      case 4: return !!state.marital;
+      case 5: return !!state.employment;
+      case 6: return !!state.income;
+      case 7: return !!state.balance;
+      case 8: return !!state.property;
+      case 9: return !!state.refusal;
+      case 10: return state.contact.name.length > 2 && state.contact.phone.length > 8;
+      default: return true;
+    }
   };
-
-  if (result) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center p-6">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="max-w-lg w-full bg-card rounded-2xl p-8 border border-border shadow-2xl text-center"
-          >
-            <div className="w-24 h-24 rounded-full mx-auto flex items-center justify-center mb-6 shadow-inner" style={{
-              backgroundColor: result.band === "High" ? "rgba(45, 106, 79, 0.2)" : result.band === "Medium" ? "rgba(201, 168, 76, 0.2)" : "rgba(220, 38, 38, 0.2)",
-              color: result.band === "High" ? "#4ADE80" : result.band === "Medium" ? "#C9A84C" : "#EF4444"
-            }}>
-              <span className="text-4xl font-display font-bold">{result.score}</span>
-            </div>
-            
-            <h2 className="text-3xl font-display font-bold mb-2">Assessment Complete</h2>
-            <p className="text-muted-foreground mb-8">Based on the provided information, your success probability band is <strong style={{color: result.band === "High" ? "#4ADE80" : result.band === "Medium" ? "#C9A84C" : "#EF4444"}}>{result.band}</strong>.</p>
-            
-            <div className="bg-secondary/20 p-6 rounded-lg text-left mb-8">
-              <h3 className="font-bold mb-4 text-sm uppercase tracking-wider text-muted-foreground">Recommendations</h3>
-              <ul className="space-y-3">
-                {result.recommendations?.map((rec: string, i: number) => (
-                  <li key={i} className="flex gap-3 text-sm">
-                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                    <span>{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <Button size="lg" className="w-full gold-gradient-bg text-primary-foreground font-bold border-none" asChild>
-              <a href="https://wa.me/923145352222" target="_blank" rel="noreferrer">
-                Book Detailed Consultation
-              </a>
-            </Button>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-[100dvh] bg-background flex flex-col">
       <Navbar />
       
       {/* Progress Bar */}
-      <div className="w-full h-1 bg-secondary/50">
-        <div 
-          className="h-full gold-gradient-bg transition-all duration-500 ease-out"
-          style={{ width: `${(step / totalSteps) * 100}%` }}
+      <div className="fixed top-[72px] left-0 w-full h-1 bg-white/5 z-40">
+        <motion.div 
+          className="h-full gold-gradient-bg"
+          animate={{ width: `${step <= 10 ? progress : 100}%` }}
+          transition={{ ease: "easeInOut", duration: 0.3 }}
         />
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="max-w-xl w-full">
-          <div className="mb-8 flex items-center justify-between">
-            {step > 1 ? (
-              <Button variant="ghost" size="sm" onClick={prevStep} className="text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back
-              </Button>
-            ) : <div />}
-            <span className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
-              Step {step} of {totalSteps}
-            </span>
+      <main className="flex-1 container max-w-3xl mx-auto py-12 flex flex-col justify-center relative">
+        
+        {/* Step Indicator */}
+        {step <= 10 && (
+          <div className="text-center mb-8 text-muted-foreground font-mono text-sm tracking-widest">
+            STEP {step} OF {totalSteps}
           </div>
+        )}
 
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-xl overflow-hidden relative">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={step}
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -50, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    
-                    {step === 1 && (
-                      <div className="space-y-6">
-                        <h2 className="text-3xl font-display font-bold">Where do you want to go?</h2>
-                        <FormField control={form.control} name="destinationCountry" render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-2 gap-4">
-                                {["UK", "USA", "Canada", "Australia", "Turkey", "Schengen"].map(country => (
-                                  <div key={country}>
-                                    <RadioGroupItem value={country} id={`c-${country}`} className="peer sr-only" />
-                                    <Label htmlFor={`c-${country}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 cursor-pointer transition-all">
-                                      {country}
-                                    </Label>
-                                  </div>
-                                ))}
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                      </div>
-                    )}
-
-                    {step === 2 && (
-                      <div className="space-y-6">
-                        <h2 className="text-3xl font-display font-bold">Purpose of visit?</h2>
-                        <FormField control={form.control} name="visaPurpose" render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid gap-3">
-                                {["Tourism / Visit", "Business / Meetings", "Family Reunion", "Study", "Medical"].map(purpose => (
-                                  <div key={purpose}>
-                                    <RadioGroupItem value={purpose} id={`p-${purpose}`} className="peer sr-only" />
-                                    <Label htmlFor={`p-${purpose}`} className="flex items-center rounded-md border border-muted bg-popover px-4 py-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 cursor-pointer transition-all">
-                                      {purpose}
-                                    </Label>
-                                  </div>
-                                ))}
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                      </div>
-                    )}
-
-                    {step === 3 && (
-                      <div className="space-y-6">
-                        <h2 className="text-3xl font-display font-bold">What is your age range?</h2>
-                        <FormField control={form.control} name="ageRange" render={({ field }) => (
-                          <FormItem>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="h-14 text-lg">
-                                  <SelectValue placeholder="Select age range" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="18-25">18 - 25 years</SelectItem>
-                                <SelectItem value="26-35">26 - 35 years</SelectItem>
-                                <SelectItem value="36-45">36 - 45 years</SelectItem>
-                                <SelectItem value="46-55">46 - 55 years</SelectItem>
-                                <SelectItem value="55+">55+ years</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )} />
-                      </div>
-                    )}
-
-                    {/* Simulating steps 4-9 as simplified selects/radios for brevity */}
-                    {step > 3 && step < 10 && (
-                      <div className="space-y-6">
-                        <h2 className="text-3xl font-display font-bold">Let's gather some profile details</h2>
-                        <p className="text-muted-foreground">This helps our system calculate accurate probabilities.</p>
-                        
-                        {/* We'll just show one generic field here for the mockup, but ideally it would be separate screens */}
-                        <div className="p-4 border border-primary/20 bg-primary/5 rounded-lg text-primary text-sm mb-4">
-                          (Wizard continues gathering: marital status, employment, income, bank balance, property, travel history...)
-                        </div>
-                        
-                        <FormField control={form.control} name="maritalStatus" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Marital Status</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Single">Single</SelectItem>
-                                <SelectItem value="Married">Married</SelectItem>
-                                <SelectItem value="Divorced">Divorced</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )} />
-                      </div>
-                    )}
-
-                    {step === 10 && (
-                      <div className="space-y-6">
-                        <h2 className="text-3xl font-display font-bold">Where should we send your results?</h2>
-                        
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl><Input placeholder="John Doe" className="h-12" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                        
-                        <FormField control={form.control} name="email" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email Address</FormLabel>
-                            <FormControl><Input type="email" placeholder="john@example.com" className="h-12" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                        
-                        <FormField control={form.control} name="phone" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone/WhatsApp Number</FormLabel>
-                            <FormControl><Input placeholder="+92 300 0000000" className="h-12" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                      </div>
-                    )}
-
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-10">
-                  {step < totalSteps ? (
-                    <Button type="button" size="lg" className="w-full gold-gradient-bg text-primary-foreground font-bold border-none" onClick={nextStep}>
-                      Next <ChevronRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  ) : (
-                    <Button type="submit" size="lg" className="w-full gold-gradient-bg text-primary-foreground font-bold border-none" disabled={submitElig.isPending}>
-                      {submitElig.isPending ? "Calculating Results..." : "Get My Results"}
-                    </Button>
-                  )}
+        <div className="glass-card rounded-3xl p-6 md:p-12 relative overflow-hidden min-h-[500px] flex flex-col">
+          <AnimatePresence mode="wait">
+            
+            {/* Step 1: Country */}
+            {step === 1 && (
+              <StepWrapper key="s1" title="Where do you want to go?">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {countries.map(c => (
+                    <SelectionCard 
+                      key={c.id} 
+                      selected={state.country === c.id} 
+                      onClick={() => { dispatch({ type: 'SET_FIELD', field: 'country', value: c.id }); setTimeout(nextStep, 300); }}
+                    >
+                      <span className="text-4xl mb-2 block">{c.flag}</span>
+                      <span className="font-semibold">{c.name}</span>
+                    </SelectionCard>
+                  ))}
                 </div>
-              </form>
-            </Form>
-          </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 2: Purpose */}
+            {step === 2 && (
+              <StepWrapper key="s2" title="What is the purpose of your trip?">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {purposes.map(p => (
+                    <SelectionCard 
+                      key={p.id} 
+                      selected={state.purpose === p.id} 
+                      onClick={() => { dispatch({ type: 'SET_FIELD', field: 'purpose', value: p.id }); setTimeout(nextStep, 300); }}
+                    >
+                      <p.icon className="w-8 h-8 mb-3 opacity-80" />
+                      <span className="font-semibold">{p.name}</span>
+                    </SelectionCard>
+                  ))}
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 3: Age */}
+            {step === 3 && (
+              <StepWrapper key="s3" title="What is your age group?">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {["Under 25", "25 - 35", "36 - 50", "Over 50"].map(a => (
+                    <SelectionCard key={a} selected={state.age === a} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'age', value: a }); setTimeout(nextStep, 300); }}>
+                      <span className="font-semibold text-lg">{a}</span>
+                    </SelectionCard>
+                  ))}
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 4: Marital Status */}
+            {step === 4 && (
+              <StepWrapper key="s4" title="What is your marital status?">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {["Single", "Married", "Divorced", "Widowed"].map(m => (
+                    <SelectionCard key={m} selected={state.marital === m} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'marital', value: m }); setTimeout(nextStep, 300); }}>
+                      <span className="font-semibold text-lg">{m}</span>
+                    </SelectionCard>
+                  ))}
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 5: Employment */}
+            {step === 5 && (
+              <StepWrapper key="s5" title="What is your current employment status?">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {employments.map(e => (
+                    <SelectionCard key={e} selected={state.employment === e} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'employment', value: e }); setTimeout(nextStep, 300); }} className="py-4">
+                      <span className="font-semibold">{e}</span>
+                    </SelectionCard>
+                  ))}
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 6: Income */}
+            {step === 6 && (
+              <StepWrapper key="s6" title="What is your average monthly income?">
+                <p className="text-sm text-muted-foreground mb-6 -mt-2">This helps us understand your financial ties to your home country.</p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {incomes.map(i => (
+                    <SelectionCard key={i} selected={state.income === i} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'income', value: i }); setTimeout(nextStep, 300); }} className="py-4">
+                      <span className="font-semibold">{i}</span>
+                    </SelectionCard>
+                  ))}
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 7: Bank Balance */}
+            {step === 7 && (
+              <StepWrapper key="s7" title="Average closing balance (Last 6 Months)">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {balances.map(b => (
+                    <SelectionCard key={b} selected={state.balance === b} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'balance', value: b }); setTimeout(nextStep, 300); }} className="py-4">
+                      <span className="font-semibold">{b}</span>
+                    </SelectionCard>
+                  ))}
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 8: Property */}
+            {step === 8 && (
+              <StepWrapper key="s8" title="Do you own property in Pakistan?">
+                <div className="grid grid-cols-2 gap-4">
+                  <SelectionCard selected={state.property === "yes"} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'property', value: "yes" }); setTimeout(nextStep, 300); }}>
+                    <span className="font-semibold text-xl">Yes</span>
+                  </SelectionCard>
+                  <SelectionCard selected={state.property === "no"} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'property', value: "no" }); setTimeout(nextStep, 300); }}>
+                    <span className="font-semibold text-xl">No</span>
+                  </SelectionCard>
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 9: Refusals */}
+            {step === 9 && (
+              <StepWrapper key="s9" title="Have you ever had a visa refusal?">
+                <p className="text-sm text-muted-foreground mb-6 -mt-2">Be honest. A previous refusal does not mean you cannot get a visa.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <SelectionCard selected={state.refusal === "yes"} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'refusal', value: "yes" }); setTimeout(nextStep, 300); }}>
+                    <span className="font-semibold text-xl text-red-400">Yes</span>
+                  </SelectionCard>
+                  <SelectionCard selected={state.refusal === "no"} onClick={() => { dispatch({ type: 'SET_FIELD', field: 'refusal', value: "no" }); setTimeout(nextStep, 300); }}>
+                    <span className="font-semibold text-xl text-green-400">No</span>
+                  </SelectionCard>
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Step 10: Contact */}
+            {step === 10 && (
+              <StepWrapper key="s10" title="Where should we send your results?">
+                <div className="space-y-6 max-w-md mx-auto w-full">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">Full Name</label>
+                    <input 
+                      type="text" 
+                      value={state.contact.name}
+                      onChange={e => dispatch({ type: 'SET_FIELD', field: 'contact', value: { ...state.contact, name: e.target.value } })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:border-primary focus:outline-none transition-colors"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">WhatsApp Number</label>
+                    <input 
+                      type="tel" 
+                      value={state.contact.phone}
+                      onChange={e => dispatch({ type: 'SET_FIELD', field: 'contact', value: { ...state.contact, phone: e.target.value } })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:border-primary focus:outline-none transition-colors"
+                      placeholder="0300 1234567"
+                    />
+                  </div>
+                </div>
+              </StepWrapper>
+            )}
+
+            {/* Result Screen */}
+            {step === 11 && result && (
+              <motion.div 
+                key="result"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center text-center py-8 h-full"
+              >
+                <div className="relative w-48 h-48 mb-8">
+                  <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="10" />
+                    <motion.circle 
+                      cx="50" cy="50" r="45" fill="none" 
+                      stroke={result.type === 'strong' ? '#22c55e' : result.type === 'moderate' ? '#eab308' : '#ef4444'} 
+                      strokeWidth="10" 
+                      strokeDasharray="283"
+                      initial={{ strokeDashoffset: 283 }}
+                      animate={{ strokeDashoffset: 283 - (283 * result.score) / 100 }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-4xl font-display font-bold">{result.score}%</span>
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground mt-1">Score</span>
+                  </div>
+                </div>
+
+                <h2 className={`text-3xl font-display font-bold mb-4 ${
+                  result.type === 'strong' ? 'text-green-400' : result.type === 'moderate' ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {result.type === 'strong' ? 'Strong Eligibility 🎉' : result.type === 'moderate' ? 'Moderate Profile' : 'Needs Strengthening'}
+                </h2>
+                
+                <p className="text-muted-foreground max-w-md mx-auto mb-8">
+                  {result.type === 'strong' ? 'Your profile looks excellent for a visa application. Let’s prepare the documents.' : 
+                   result.type === 'moderate' ? 'You have a fair chance, but your application requires careful preparation and expert justification.' : 
+                   'Your profile has high refusal risks currently. We highly recommend a consultation to improve your ties before applying.'}
+                </p>
+
+                <Button size="lg" className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold h-14 px-8 rounded-xl shadow-lg transition-transform hover:-translate-y-1">
+                  <a href={`https://wa.me/923145352222?text=Hi, I completed the eligibility check for ${state.country.toUpperCase()} visa. My score is ${result.score}%.`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                    <RiWhatsappFill className="text-2xl" /> Book Free Consultation Now
+                  </a>
+                </Button>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+
+          {/* Navigation Footer */}
+          {step <= 10 && (
+            <div className="mt-auto pt-8 flex items-center justify-between border-t border-white/10">
+              <Button 
+                variant="ghost" 
+                onClick={prevStep} 
+                disabled={step === 1 || isSubmitting}
+                className="text-white/60 hover:text-white"
+              >
+                <RiArrowLeftLine className="mr-2" /> Back
+              </Button>
+              
+              <Button 
+                onClick={nextStep} 
+                disabled={!isStepValid() || isSubmitting}
+                className="gold-gradient-bg text-black font-semibold min-w-[120px]"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+                    Analyzing...
+                  </span>
+                ) : step === 10 ? (
+                  "Show Results"
+                ) : (
+                  <span className="flex items-center">Next <RiArrowRightLine className="ml-2" /></span>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      </main>
     </div>
+  );
+}
+
+// Helper Components
+function StepWrapper({ title, children }: { title: string, children: React.ReactNode }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.3 }}
+      className="flex-1 flex flex-col"
+    >
+      <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-8">{title}</h2>
+      <div className="flex-1 flex flex-col justify-center">
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
+function SelectionCard({ children, selected, onClick, className = "" }: { children: React.ReactNode, selected: boolean, onClick: () => void, className?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative p-6 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 border ${
+        selected 
+          ? 'bg-primary/10 border-primary text-white shadow-glow-gold' 
+          : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/20'
+      } ${className}`}
+    >
+      {selected && (
+        <div className="absolute top-3 right-3 w-5 h-5 bg-primary rounded-full flex items-center justify-center text-black">
+          <RiCheckLine className="w-3 h-3" />
+        </div>
+      )}
+      {children}
+    </button>
   );
 }
