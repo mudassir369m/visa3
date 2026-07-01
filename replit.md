@@ -15,7 +15,7 @@ Premium visa consultancy website for New Euro Consultants Travel & Tours (Islama
 
 ## Workflow
 
-- **New Euro Frontend** — `PORT=24898 BASE_PATH=/ pnpm --filter @workspace/new-euro run dev` (webview, port 24898)
+- **artifacts/new-euro: web** — managed artifact workflow (port 24898, preview at `/`)
 
 ## Stack
 

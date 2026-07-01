@@ -9,28 +9,6 @@ args = ["pnpm", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
-runButton = "Project"
-
-[[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "New Euro Frontend"
-
-[[workflows.workflow]]
-name = "New Euro Frontend"
-author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "PORT=24898 BASE_PATH=/ pnpm --filter @workspace/new-euro run dev"
-waitForPort = 24898
 
 [agent]
 stack = "PNPM_WORKSPACE"
