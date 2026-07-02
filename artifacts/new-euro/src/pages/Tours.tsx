@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Link } from "wouter";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useListTours } from "@workspace/api-client-react";
@@ -80,8 +81,8 @@ export default function Tours() {
                       )}
                       <p className="text-lg font-bold">PKR <span className="text-primary">{tour.price}</span></p>
                     </div>
-                    <Button variant="ghost" size="sm" className="text-xs font-semibold hover:bg-primary hover:text-black">
-                      Details →
+                    <Button asChild variant="ghost" size="sm" className="text-xs font-semibold hover:bg-primary hover:text-black">
+                      <Link href={`/tours/${tour.id}`}>Details →</Link>
                     </Button>
                   </div>
                 </div>

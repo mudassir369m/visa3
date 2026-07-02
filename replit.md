@@ -56,7 +56,11 @@ Full-stack visa consultancy site — public site + admin panel are both live and
 - Admin panel at `/admin/*` — full CRUD for hero slides, visas, services, tours, testimonials, FAQs, blog, embassy updates; a leads inbox and eligibility-submissions view with WhatsApp/call quick actions and status/notes editing; a dashboard with real KPIs + a Recharts leads-over-30-days chart; a site-settings form. All content-entity admin pages share one generic component (`components/admin/CrudPage.tsx`) driven by a per-entity field config — see `pages/admin/Visas.tsx` for the reference pattern.
 - Admin/leads/eligibility emails via Resend (`artifacts/api-server/src/lib/email.ts`) — no-ops with a log line if `RESEND_API_KEY`/`EMAIL_TO_ADMIN` aren't set, so it never blocks local dev.
 
-**Known remaining gaps vs. the master prompt spec:** no light/dark toggle (dark-mode only), no file/media upload (hero media + service/tour images are URL-paste only, no storage abstraction), no i18n content translation for admin-entered text (EN/UR toggle only translates static UI strings), no Dockerfile/railway.json at the repo root.
+**Known remaining gaps vs. the master prompt spec:** no file/media upload (hero media + service/tour images are URL-paste only, no storage abstraction), no i18n content translation for admin-entered text (EN/UR toggle only translates static UI strings), no Dockerfile/railway.json at the repo root. Gallery page is placeholder (no DB-backed gallery table yet).
+
+**Added public pages:** `/why-us`, `/process`, `/success-stories`, `/blog`, `/blog/:slug`, `/gallery`, `/privacy`, `/terms`, `/visa` (overview), `/tours/:id` (detail).
+**Added admin pages:** `/admin/success-stories`, `/admin/newsletter`, `/admin/users`, `/admin/analytics`.
+**Added features:** light/dark theme toggle (Navbar), `/admin` → `/admin/dashboard` redirect, tour cards now link to detail pages.
 
 ## User preferences
 

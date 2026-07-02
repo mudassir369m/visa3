@@ -118,7 +118,7 @@ export default function ToursCarousel() {
                         <p className="text-lg font-bold">PKR <span className="text-primary">{tour.price}</span></p>
                       </div>
                       <Button asChild variant="ghost" size="sm" className="text-xs font-semibold hover:bg-primary hover:text-black">
-                        <Link href="/tours">Details →</Link>
+                        <Link href={`/tours/${tour.id}`}>Details →</Link>
                       </Button>
                     </div>
                   </div>

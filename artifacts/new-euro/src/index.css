@@ -131,6 +131,50 @@
   --ring: 44 54% 54%;
 }
 
+/* Light theme — applied when .light class is on <html> */
+.light {
+  --background: 0 0% 98%;          /* #FAFAFA */
+  --foreground: 220 30% 10%;       /* near black */
+  --card: 0 0% 100%;               /* pure white */
+  --card-foreground: 220 30% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 30% 10%;
+  --primary: 44 54% 40%;           /* slightly darker gold for contrast */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 40% 90%;
+  --secondary-foreground: 220 30% 20%;
+  --muted: 214 20% 94%;
+  --muted-foreground: 217 20% 45%;
+  --accent: 44 54% 40%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 20% 88%;
+  --input: 220 20% 88%;
+  --ring: 44 54% 40%;
+}
+
+.light body {
+  background-color: #FAFAFA;
+}
+
+.light .glass-card {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.light .gold-gradient-text {
+  background: linear-gradient(135deg, #B8941F, #D4AF37, #E5C25D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.light .gold-gradient-bg {
+  background: linear-gradient(135deg, #B8941F, #D4AF37, #E5C25D);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

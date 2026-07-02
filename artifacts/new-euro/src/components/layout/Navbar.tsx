@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown, Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/lib/theme";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [location] = useLocation();
   const { t, i18n } = useTranslation();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => {
@@ -37,18 +39,20 @@ export default function Navbar() {
       label: t("nav.visas"), 
       path: "/visa",
       dropdown: [
-        { label: "UK", path: "/visa/uk" },
-        { label: "USA", path: "/visa/usa" },
-        { label: "Canada", path: "/visa/canada" },
-        { label: "Australia", path: "/visa/australia" },
-        { label: "Turkey", path: "/visa/turkey" },
-        { label: "Schengen", path: "/visa/schengen" },
+        { label: "All Visas", path: "/visa" },
+        { label: "🇬🇧 UK", path: "/visa/uk" },
+        { label: "🇺🇸 USA", path: "/visa/usa" },
+        { label: "🇨🇦 Canada", path: "/visa/canada" },
+        { label: "🇦🇺 Australia", path: "/visa/australia" },
+        { label: "🇹🇷 Turkey", path: "/visa/turkey" },
+        { label: "🇪🇺 Schengen", path: "/visa/schengen" },
       ]
     },
     { 
       label: t("nav.services"), 
       path: "/services",
       dropdown: [
+        { label: "All Services", path: "/services" },
         { label: "Air Ticketing", path: "/services#air" },
         { label: "Hotel Booking", path: "/services#hotel" },
         { label: "Travel Insurance", path: "/services#insurance" },
@@ -56,7 +60,18 @@ export default function Navbar() {
       ]
     },
     { label: t("nav.tours"), path: "/tours" },
-    { label: t("nav.about"), path: "/about" },
+    { 
+      label: "About", 
+      path: "/about",
+      dropdown: [
+        { label: "About Us", path: "/about" },
+        { label: "Why Choose Us", path: "/why-us" },
+        { label: "Our Process", path: "/process" },
+        { label: "Success Stories", path: "/success-stories" },
+        { label: "Gallery", path: "/gallery" },
+      ]
+    },
+    { label: "Blog", path: "/blog" },
     { label: t("nav.contact"), path: "/contact" },
   ];
 
@@ -108,9 +123,18 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           <button onClick={toggleLanguage} className="text-xs font-semibold px-2 py-1 border border-white/10 rounded hover:bg-white/5 transition-colors">
             {i18n.language === 'en' ? 'اردو' : 'EN'}
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="w-8 h-8 flex items-center justify-center border border-white/10 rounded hover:bg-white/5 transition-colors"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           
           <Button asChild variant="default" className="gold-gradient-bg text-black font-semibold border-none hover:shadow-glow-gold transition-all duration-300 transform hover:-translate-y-0.5 rounded-sm">
