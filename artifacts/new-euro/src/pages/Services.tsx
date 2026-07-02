@@ -1,47 +1,37 @@
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { PlaneTakeoff, Hotel, ShieldCheck, Map, CheckCircle2 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { PlaneTakeoff, CheckCircle2 } from "lucide-react";
+import { useListServices } from "@workspace/api-client-react";
+
+type LucideIcon = typeof PlaneTakeoff;
+
+const FEATURES: Record<string, string[]> = {
+  "air-ticketing": ["Global airline network", "Corporate discounts", "Date change assistance", "Group booking rates"],
+  "hotel-booking": ["Visa-compliant bookings", "Pay-later options", "Budget to Luxury range", "Instant confirmation"],
+  "travel-insurance": ["Schengen approved (€30k coverage)", "Covid-19 coverage included", "Instant policy generation", "Baggage loss protection"],
+  tours: ["Customized itineraries", "Honeymoon packages", "Family group tours", "Dedicated local guides"],
+};
 
 export default function Services() {
-  const services = [
-    {
-      id: "air",
-      icon: PlaneTakeoff,
-      title: "Air Ticketing",
-      desc: "We provide competitive airfares for all major airlines operating from Pakistan. Our IATA certified booking agents ensure you get the best routes with optimal layovers.",
-      features: ["Global airline network", "Corporate discounts", "Date change assistance", "Group booking rates"]
-    },
-    {
-      id: "hotel",
-      icon: Hotel,
-      title: "Hotel Booking",
-      desc: "Whether you need a confirmed booking for visa purposes or a luxury stay for your vacation, we offer global hotel reservations through verified international partners.",
-      features: ["Visa-compliant bookings", "Pay-later options", "Budget to Luxury range", "Instant confirmation"]
-    },
-    {
-      id: "insurance",
-      icon: ShieldCheck,
-      title: "Travel Insurance",
-      desc: "Mandatory for Schengen and highly recommended for other regions. We provide recognized travel health insurance that meets all embassy requirements.",
-      features: ["Schengen approved (€30k coverage)", "Covid-19 coverage included", "Instant policy generation", "Baggage loss protection"]
-    },
-    {
-      id: "tours",
-      icon: Map,
-      title: "Tour Packages",
-      desc: "Complete end-to-end holiday packages including visas, flights, hotels, and guided tours. Specialized in Europe, Turkey, Asia, and Umrah packages.",
-      features: ["Customized itineraries", "Honeymoon packages", "Family group tours", "Dedicated local guides"]
-    }
-  ];
+  const { data: serviceList, isLoading } = useListServices();
+
+  const services = (serviceList ?? []).map((s) => ({
+    id: s.slug,
+    icon: (LucideIcons as unknown as Record<string, LucideIcon>)[s.icon] ?? PlaneTakeoff,
+    title: s.title,
+    desc: s.description,
+    features: FEATURES[s.slug] ?? [],
+  }));
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background">
       <Navbar />
-      
+
       <main className="flex-1">
         <section className="py-24 text-center container max-w-4xl">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-display-xl font-bold mb-6"
@@ -52,8 +42,11 @@ export default function Services() {
         </section>
 
         <section className="pb-24 container max-w-5xl space-y-16">
-          {services.map((svc, i) => (
-            <motion.div 
+          {isLoading && Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass-card h-64 rounded-3xl animate-pulse bg-white/5" />
+          ))}
+          {services.map((svc) => (
+            <motion.div
               key={svc.id}
               id={svc.id}
               initial={{ opacity: 0, y: 20 }}
@@ -67,19 +60,21 @@ export default function Services() {
                 </div>
                 <h2 className="text-3xl font-display font-bold mb-2 text-white">{svc.title}</h2>
               </div>
-              
+
               <div>
                 <p className="text-lg text-white/70 mb-8 leading-relaxed">
                   {svc.desc}
                 </p>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {svc.features.map(f => (
-                    <div key={f} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                      <span className="text-sm font-medium text-white/90">{f}</span>
-                    </div>
-                  ))}
-                </div>
+                {svc.features.length > 0 && (
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {svc.features.map((f) => (
+                      <div key={f} className="flex items-center gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                        <span className="text-sm font-medium text-white/90">{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}

@@ -16,7 +16,7 @@ export default function Hero() {
       <MeshGradient />
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/10 to-transparent blur-3xl z-0 pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
 
-      <div className="container relative z-10 grid lg:grid-cols-[60%_40%] gap-8 items-center pt-20 lg:pt-0">
+      <div className="container relative z-10 grid lg:grid-cols-[3fr_2fr] gap-8 items-center pt-20 lg:pt-0">
         
         {/* Left Content */}
         <div className="space-y-8 flex flex-col justify-center">

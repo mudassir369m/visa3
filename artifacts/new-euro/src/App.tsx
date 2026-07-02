@@ -9,6 +9,19 @@ import EligibilityCheck from "@/pages/EligibilityCheck";
 import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
 
+// Admin CRUD Pages
+const AdminHero = React.lazy(() => import("@/pages/admin/Hero"));
+const AdminVisas = React.lazy(() => import("@/pages/admin/Visas"));
+const AdminServices = React.lazy(() => import("@/pages/admin/Services"));
+const AdminTours = React.lazy(() => import("@/pages/admin/Tours"));
+const AdminTestimonials = React.lazy(() => import("@/pages/admin/Testimonials"));
+const AdminFaqs = React.lazy(() => import("@/pages/admin/Faqs"));
+const AdminBlog = React.lazy(() => import("@/pages/admin/Blog"));
+const AdminEmbassyUpdates = React.lazy(() => import("@/pages/admin/EmbassyUpdates"));
+const AdminLeads = React.lazy(() => import("@/pages/admin/Leads"));
+const AdminEligibility = React.lazy(() => import("@/pages/admin/Eligibility"));
+const AdminSettings = React.lazy(() => import("@/pages/admin/Settings"));
+
 // Lazy Pages
 const About = React.lazy(() => import("@/pages/About"));
 const Contact = React.lazy(() => import("@/pages/Contact"));
@@ -56,7 +69,18 @@ function Router() {
         {/* Admin Routes */}
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin/dashboard" component={AdminDashboard} />
-        
+        <Route path="/admin/hero" component={AdminHero} />
+        <Route path="/admin/visas" component={AdminVisas} />
+        <Route path="/admin/services" component={AdminServices} />
+        <Route path="/admin/tours" component={AdminTours} />
+        <Route path="/admin/testimonials" component={AdminTestimonials} />
+        <Route path="/admin/faqs" component={AdminFaqs} />
+        <Route path="/admin/blog" component={AdminBlog} />
+        <Route path="/admin/embassy-updates" component={AdminEmbassyUpdates} />
+        <Route path="/admin/leads" component={AdminLeads} />
+        <Route path="/admin/eligibility" component={AdminEligibility} />
+        <Route path="/admin/settings" component={AdminSettings} />
+
         {/* Fallback */}
         <Route component={NotFound} />
       </Switch>

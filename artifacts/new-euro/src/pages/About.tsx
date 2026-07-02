@@ -31,7 +31,7 @@ export default function About() {
         </section>
 
         {/* Founder Profile */}
-        <section className="py-24 bg-card border-y border-white/5">
+        <section className="py-24 bg-card border-y border-white/5 overflow-hidden">
           <div className="container">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="relative aspect-square md:aspect-[3/4] max-w-md mx-auto w-full">

@@ -48,12 +48,15 @@ Premium visa consultancy website for New Euro Consultants Travel & Tours (Islama
 
 ## Product
 
-Public-facing visa consultancy site with:
-- Home page with all major sections (hero, country cards, services, how-it-works, eligibility teaser, tours carousel, success stories, FAQs, office map, final CTA) — all data-driven sections (visas, services, tours, testimonials, faqs, blog, embassy updates, stats, settings) fetch live from the API via generated React Query hooks
+Full-stack visa consultancy site — public site + admin panel are both live and DB-backed:
+- Home page with all major sections (hero, country cards, services, how-it-works, eligibility teaser, tours carousel, success stories, FAQs, office map, final CTA) — all data-driven sections fetch live from the API via generated React Query hooks
+- 6 visa detail pages (`/visa/uk` etc.), `/services`, `/tours` — all fetch by slug/list from the DB (visa page: `useGetVisaBySlug`)
 - Eligibility check multi-step wizard — submits to `POST /api/eligibility`, scored server-side
 - Contact form and newsletter signup — submit to `POST /api/leads` and `POST /api/newsletter`
-- Admin panel (login + dashboard stub; full CRUD UI is still a follow-up task, but every admin API route is implemented and session-auth-protected)
-- 6 static visa detail pages (`/visa/uk`, `/visa/usa`, etc.) and the `/services` and `/tours` detail pages are still hardcoded — not yet wired to fetch by slug from the API
+- Admin panel at `/admin/*` — full CRUD for hero slides, visas, services, tours, testimonials, FAQs, blog, embassy updates; a leads inbox and eligibility-submissions view with WhatsApp/call quick actions and status/notes editing; a dashboard with real KPIs + a Recharts leads-over-30-days chart; a site-settings form. All content-entity admin pages share one generic component (`components/admin/CrudPage.tsx`) driven by a per-entity field config — see `pages/admin/Visas.tsx` for the reference pattern.
+- Admin/leads/eligibility emails via Resend (`artifacts/api-server/src/lib/email.ts`) — no-ops with a log line if `RESEND_API_KEY`/`EMAIL_TO_ADMIN` aren't set, so it never blocks local dev.
+
+**Known remaining gaps vs. the master prompt spec:** no light/dark toggle (dark-mode only), no file/media upload (hero media + service/tour images are URL-paste only, no storage abstraction), no i18n content translation for admin-entered text (EN/UR toggle only translates static UI strings), no Dockerfile/railway.json at the repo root.
 
 ## User preferences
 
@@ -74,6 +77,8 @@ Public-facing visa consultancy site with:
 - Vite dev server proxies `/api/*` to the API server; target defaults to `http://localhost:5000`, override with `API_PROXY_TARGET`
 - Express 5's route-handler-array typings widen `req.params.id` to `string | string[]` when a route has more than one handler (e.g. `requireAuth` + async handler) — routes work around this with `req.params.id as string` before `parseInt`
 - Frontend needs a local Postgres for `useListVisas`/etc. to return data — no `DATABASE_URL` is set by default in this environment; a docker-run Postgres works fine for local dev (`.env` at repo root, gitignored)
+- `CrudPage`'s generic form marks every text/textarea/number field `required` by default (since most entity fields are required) — set `required: false` explicitly in a page's field config for genuinely optional schema fields (e.g. `fees`, `description`, `secondaryCta`), or the form silently blocks submission
+- Email notifications need `RESEND_API_KEY` and `EMAIL_TO_ADMIN` env vars; without them `notifyAdmin()` just logs and returns, it never throws
 
 ## Pointers
 

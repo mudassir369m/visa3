@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, eligibilitySubmissionsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../middlewares/require-auth";
+import { notifyAdmin } from "../lib/email";
 
 const router = Router();
 
@@ -71,6 +72,12 @@ router.post("/", async (req, res) => {
     status: "new",
   }).returning();
   res.status(201).json({ id: row.id, score, band, recommendations });
+  void notifyAdmin(
+    `New eligibility check: ${row.name} (${row.score}%, ${row.band})`,
+    `<p><strong>${row.name}</strong> (${row.phone}, ${row.email}) completed an eligibility check for <strong>${row.destinationCountry.toUpperCase()}</strong>.</p>
+     <p><strong>Score:</strong> ${row.score}% (${row.band})</p>
+     <p><strong>Purpose:</strong> ${row.visaPurpose}</p>`
+  );
 });
 
 // GET /api/eligibility

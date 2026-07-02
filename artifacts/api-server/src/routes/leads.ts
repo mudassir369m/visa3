@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, leadsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../middlewares/require-auth";
+import { notifyAdmin } from "../lib/email";
 
 const router = Router();
 
@@ -24,6 +25,12 @@ function mapLead(l: typeof leadsTable.$inferSelect) {
 router.post("/", async (req, res) => {
   const [row] = await db.insert(leadsTable).values({ ...req.body, status: "new" }).returning();
   res.status(201).json(mapLead(row));
+  void notifyAdmin(
+    `New lead: ${row.name}`,
+    `<p><strong>${row.name}</strong> (${row.phone}, ${row.email}) submitted the contact form.</p>
+     <p><strong>Subject:</strong> ${row.subject}</p>
+     <p><strong>Message:</strong> ${row.message}</p>`
+  );
 });
 
 router.get("/", requireAuth, async (_req, res) => {

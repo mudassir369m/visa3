@@ -26,7 +26,7 @@ export default function BlogPreview() {
   if (!mainArticle) return null;
 
   return (
-    <section className="py-24 bg-card border-t border-white/5">
+    <section className="py-24 bg-card border-t border-white/5 overflow-hidden">
       <div className="container">
         <div className="text-center mb-16">
           <motion.h2 
