@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, leadsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/require-auth";
 
 const router = Router();
 
@@ -25,19 +26,19 @@ router.post("/", async (req, res) => {
   res.status(201).json(mapLead(row));
 });
 
-router.get("/", async (_req, res) => {
+router.get("/", requireAuth, async (_req, res) => {
   const rows = await db.select().from(leadsTable).orderBy(leadsTable.createdAt);
   res.json(rows.map(mapLead));
 });
 
-router.get("/:id", async (req, res) => {
-  const [row] = await db.select().from(leadsTable).where(eq(leadsTable.id, parseInt(req.params.id)));
+router.get("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.select().from(leadsTable).where(eq(leadsTable.id, parseInt(req.params.id as string)));
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapLead(row));
 });
 
-router.patch("/:id", async (req, res) => {
-  const [row] = await db.update(leadsTable).set(req.body).where(eq(leadsTable.id, parseInt(req.params.id))).returning();
+router.patch("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.update(leadsTable).set(req.body).where(eq(leadsTable.id, parseInt(req.params.id as string))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapLead(row));
 });

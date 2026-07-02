@@ -1,16 +1,25 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { useListTestimonials } from "@workspace/api-client-react";
 
-const reviews = [
-  { name: "Ali Hassan", visa: "UK Student Visa", initials: "AH", color: "bg-blue-600", text: "Got my UK student visa in just 12 days! The team guided me perfectly on bank statements. Very professional.", rating: 5 },
-  { name: "Sana Tariq", visa: "USA B1/B2 Visa", initials: "ST", color: "bg-pink-600", text: "I had a previous refusal, but New Euro rebuilt my case beautifully. The mock interviews gave me so much confidence.", rating: 5 },
-  { name: "Fahad M.", visa: "Schengen Visa", initials: "FM", color: "bg-emerald-600", text: "Zero hassle. They arranged the appointment, filled the forms, and booked the hotels. My family's Schengen visa was approved smoothly.", rating: 5 },
-  { name: "Zainab R.", visa: "Canada Visit", initials: "ZR", color: "bg-amber-600", text: "Super transparent about their fees. No hidden charges. The portal to track documents is very helpful.", rating: 4 },
-  { name: "Usman A.", visa: "Australia Visa", initials: "UA", color: "bg-purple-600", text: "Best consultancy in F-11 Markaz. Mustafa bhai is very knowledgeable about current immigration laws.", rating: 5 },
-  { name: "Kamran K.", visa: "Turkey E-Visa", initials: "KK", color: "bg-indigo-600", text: "Got it in 24 hours. Excellent service for ticketing and hotel bookings as well.", rating: 5 }
-];
+const COLORS = ["bg-blue-600", "bg-pink-600", "bg-emerald-600", "bg-amber-600", "bg-purple-600", "bg-indigo-600"];
+
+function initialsOf(name: string) {
+  return name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+}
 
 export default function SuccessStories() {
+  const { data: testimonials, isLoading } = useListTestimonials();
+
+  const reviews = (testimonials ?? []).map((t, i) => ({
+    name: t.name,
+    visa: `${t.country} ${t.visaType}`,
+    initials: initialsOf(t.name),
+    color: COLORS[i % COLORS.length],
+    text: t.message,
+    rating: t.rating,
+  }));
+
   return (
     <section className="py-24 bg-card border-y border-white/5 relative overflow-hidden">
       {/* Decorative text watermark */}
@@ -31,6 +40,9 @@ export default function SuccessStories() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {isLoading && Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="glass-card p-8 rounded-2xl h-56 animate-pulse bg-white/5" />
+          ))}
           {reviews.map((rev, i) => (
             <motion.div 
               key={i}

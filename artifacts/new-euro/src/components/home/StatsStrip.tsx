@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useAnimation } from "framer-motion";
-
-const stats = [
-  { value: 18, suffix: "+", label: "Years of Excellence" },
-  { value: 5000, suffix: "+", label: "Visas Processed" },
-  { value: 99, suffix: "%", label: "Success Rate" },
-  { value: 50, suffix: "+", label: "Countries" }
-];
+import { useGetPublicStats } from "@workspace/api-client-react";
 
 function Counter({ from, to, duration = 2 }: { from: number, to: number, duration?: number }) {
   const [count, setCount] = useState(from);
@@ -32,7 +26,21 @@ function Counter({ from, to, duration = 2 }: { from: number, to: number, duratio
   return <span ref={ref}>{count.toLocaleString()}</span>;
 }
 
+function parseStat(raw: string): { value: number; suffix: string } {
+  const match = raw.match(/^(\d+)(.*)$/);
+  return match ? { value: Number(match[1]), suffix: match[2] || "+" } : { value: 0, suffix: raw };
+}
+
 export default function StatsStrip() {
+  const { data } = useGetPublicStats();
+
+  const stats = [
+    { value: data?.yearsExperience ?? 18, suffix: "+", label: "Years of Excellence" },
+    { value: data?.visasProcessed ?? 5000, suffix: "+", label: "Visas Processed" },
+    { ...parseStat(data?.successRate ?? "99%"), label: "Success Rate" },
+    { value: data?.countriesCovered ?? 50, suffix: "+", label: "Countries" },
+  ];
+
   return (
     <section className="bg-primary-800 py-16 relative z-20 border-y border-white/5">
       <div className="container">

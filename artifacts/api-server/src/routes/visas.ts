@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, visasTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/require-auth";
 
 const router = Router();
 
@@ -40,27 +41,27 @@ router.get("/slug/:slug", async (req, res) => {
 
 // GET /api/visas/:id
 router.get("/:id", async (req, res) => {
-  const [row] = await db.select().from(visasTable).where(eq(visasTable.id, parseInt(req.params.id)));
+  const [row] = await db.select().from(visasTable).where(eq(visasTable.id, parseInt(req.params.id as string)));
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapVisa(row));
 });
 
 // POST /api/visas
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   const [row] = await db.insert(visasTable).values(req.body).returning();
   res.status(201).json(mapVisa(row));
 });
 
 // PATCH /api/visas/:id
-router.patch("/:id", async (req, res) => {
-  const [row] = await db.update(visasTable).set(req.body).where(eq(visasTable.id, parseInt(req.params.id))).returning();
+router.patch("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.update(visasTable).set(req.body).where(eq(visasTable.id, parseInt(req.params.id as string))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapVisa(row));
 });
 
 // DELETE /api/visas/:id
-router.delete("/:id", async (req, res) => {
-  await db.delete(visasTable).where(eq(visasTable.id, parseInt(req.params.id)));
+router.delete("/:id", requireAuth, async (req, res) => {
+  await db.delete(visasTable).where(eq(visasTable.id, parseInt(req.params.id as string)));
   res.status(204).send();
 });
 

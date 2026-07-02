@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, testimonialsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/require-auth";
 
 const router = Router();
 
@@ -24,19 +25,19 @@ router.get("/", async (_req, res) => {
   res.json(rows.map(mapTestimonial));
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   const [row] = await db.insert(testimonialsTable).values(req.body).returning();
   res.status(201).json(mapTestimonial(row));
 });
 
-router.patch("/:id", async (req, res) => {
-  const [row] = await db.update(testimonialsTable).set(req.body).where(eq(testimonialsTable.id, parseInt(req.params.id))).returning();
+router.patch("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.update(testimonialsTable).set(req.body).where(eq(testimonialsTable.id, parseInt(req.params.id as string))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapTestimonial(row));
 });
 
-router.delete("/:id", async (req, res) => {
-  await db.delete(testimonialsTable).where(eq(testimonialsTable.id, parseInt(req.params.id)));
+router.delete("/:id", requireAuth, async (req, res) => {
+  await db.delete(testimonialsTable).where(eq(testimonialsTable.id, parseInt(req.params.id as string)));
   res.status(204).send();
 });
 

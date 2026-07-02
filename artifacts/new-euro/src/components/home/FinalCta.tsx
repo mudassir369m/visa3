@@ -1,8 +1,28 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { useSubscribeNewsletter } from "@workspace/api-client-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function FinalCta() {
+  const [email, setEmail] = useState("");
+  const subscribe = useSubscribeNewsletter();
+  const { toast } = useToast();
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    subscribe.mutate(
+      { data: { email } },
+      {
+        onSuccess: () => {
+          toast({ title: "Subscribed!", description: "You'll receive monthly embassy updates." });
+          setEmail("");
+        },
+      }
+    );
+  };
+
   return (
     <section className="relative py-32 overflow-hidden border-t border-white/5">
       {/* Dynamic Background */}
@@ -64,15 +84,17 @@ export default function FinalCta() {
             className="mt-20 pt-12 border-t border-white/10"
           >
             <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-6">Stay Updated</p>
-            <form className="max-w-md mx-auto flex gap-2" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Enter your email for embassy updates" 
+            <form className="max-w-md mx-auto flex gap-2" onSubmit={handleSubscribe}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email for embassy updates"
                 className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 transition-colors"
                 required
               />
-              <Button type="submit" className="bg-white/10 text-white hover:bg-primary hover:text-black transition-colors rounded-lg px-6 border border-white/10">
-                Subscribe
+              <Button type="submit" disabled={subscribe.isPending} className="bg-white/10 text-white hover:bg-primary hover:text-black transition-colors rounded-lg px-6 border border-white/10">
+                {subscribe.isPending ? "..." : "Subscribe"}
               </Button>
             </form>
             <p className="text-xs text-muted-foreground mt-4">We respect your inbox. Monthly updates only.</p>

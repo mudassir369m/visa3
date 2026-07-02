@@ -93,14 +93,14 @@ router.post("/hero", async (req, res) => {
 
 // PATCH /api/admin/hero/:id
 router.patch("/hero/:id", async (req, res) => {
-  const [row] = await db.update(heroSlidesTable).set(req.body).where(eq(heroSlidesTable.id, parseInt(req.params.id))).returning();
+  const [row] = await db.update(heroSlidesTable).set(req.body).where(eq(heroSlidesTable.id, parseInt(req.params.id as string))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapHero(row));
 });
 
 // DELETE /api/admin/hero/:id
 router.delete("/hero/:id", async (req, res) => {
-  await db.delete(heroSlidesTable).where(eq(heroSlidesTable.id, parseInt(req.params.id)));
+  await db.delete(heroSlidesTable).where(eq(heroSlidesTable.id, parseInt(req.params.id as string)));
   res.status(204).send();
 });
 

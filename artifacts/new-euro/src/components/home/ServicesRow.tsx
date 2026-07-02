@@ -1,15 +1,21 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { PlaneTakeoff, Hotel, ShieldCheck, Map } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { PlaneTakeoff } from "lucide-react";
+import { useListServices } from "@workspace/api-client-react";
 
-const services = [
-  { icon: PlaneTakeoff, title: "Air Ticketing", desc: "Best fares to 200+ destinations globally.", link: "/services#air" },
-  { icon: Hotel, title: "Hotel Booking", desc: "Verified accommodations worldwide.", link: "/services#hotel" },
-  { icon: ShieldCheck, title: "Travel Insurance", desc: "Schengen-approved medical coverage.", link: "/services#insurance" },
-  { icon: Map, title: "Tour Packages", desc: "Curated Europe, Umrah, & Asia tours.", link: "/tours" }
-];
+type LucideIcon = typeof PlaneTakeoff;
 
 export default function ServicesRow() {
+  const { data: serviceList, isLoading } = useListServices();
+
+  const services = (serviceList ?? []).map((s) => ({
+    icon: (LucideIcons as unknown as Record<string, LucideIcon>)[s.icon] ?? PlaneTakeoff,
+    title: s.title,
+    desc: s.description,
+    link: s.slug === "tours" ? "/tours" : "/services",
+  }));
+
   return (
     <section className="py-20 relative bg-background border-t border-white/5" id="services">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
@@ -27,6 +33,9 @@ export default function ServicesRow() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {isLoading && Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass-card p-8 rounded-2xl h-48 animate-pulse bg-white/5" />
+          ))}
           {services.map((svc, i) => (
             <Link key={i} href={svc.link}>
               <motion.div

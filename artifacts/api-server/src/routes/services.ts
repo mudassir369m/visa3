@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, servicesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/require-auth";
 
 const router = Router();
 
@@ -23,19 +24,19 @@ router.get("/", async (_req, res) => {
   res.json(rows.filter(r => r.published).map(mapService));
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   const [row] = await db.insert(servicesTable).values(req.body).returning();
   res.status(201).json(mapService(row));
 });
 
-router.patch("/:id", async (req, res) => {
-  const [row] = await db.update(servicesTable).set(req.body).where(eq(servicesTable.id, parseInt(req.params.id))).returning();
+router.patch("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.update(servicesTable).set(req.body).where(eq(servicesTable.id, parseInt(req.params.id as string))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapService(row));
 });
 
-router.delete("/:id", async (req, res) => {
-  await db.delete(servicesTable).where(eq(servicesTable.id, parseInt(req.params.id)));
+router.delete("/:id", requireAuth, async (req, res) => {
+  await db.delete(servicesTable).where(eq(servicesTable.id, parseInt(req.params.id as string)));
   res.status(204).send();
 });
 

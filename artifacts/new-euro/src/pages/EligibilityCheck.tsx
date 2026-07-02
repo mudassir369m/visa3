@@ -2,10 +2,11 @@ import { useState, useReducer } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
-import { 
+import {
   RiPlaneLine, RiBriefcaseLine, RiGroupLine, RiHospitalLine, RiBookLine,
   RiArrowLeftLine, RiArrowRightLine, RiCheckLine, RiWhatsappFill
 } from "react-icons/ri";
+import { useSubmitEligibility } from "@workspace/api-client-react";
 
 // Types & State
 type State = {
@@ -25,6 +26,10 @@ const initialState: State = {
   country: "", purpose: "", age: "", marital: "", employment: "",
   income: "", balance: "", property: "", refusal: "", contact: { name: "", phone: "", email: "" }
 };
+
+function mapBandToType(band: string): "strong" | "moderate" | "weak" {
+  return band === "green" ? "strong" : band === "yellow" ? "moderate" : "weak";
+}
 
 type Action = { type: 'SET_FIELD'; field: keyof State; value: any };
 
@@ -57,8 +62,8 @@ const balances = ["Under 500k PKR", "500k - 1.5M PKR", "1.5M - 3M PKR", "3M - 5M
 export default function EligibilityCheck() {
   const [step, setStep] = useState(1);
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{score: number, type: 'strong'|'moderate'|'weak'} | null>(null);
+  const submitEligibility = useSubmitEligibility();
 
   const totalSteps = 10;
   const progress = ((step - 1) / totalSteps) * 100;
@@ -70,26 +75,31 @@ export default function EligibilityCheck() {
   const prevStep = () => setStep(s => Math.max(1, s - 1));
 
   const calculateResult = () => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      let score = 50; // base score
-      
-      // Calculate basic logic based on selections
-      if (state.employment.includes("Business") || state.employment === "Employed (Govt)") score += 15;
-      if (state.income.includes("500k") || state.income.includes("1M")) score += 15;
-      if (state.balance.includes("3M") || state.balance.includes("5M")) score += 15;
-      if (state.property === "yes") score += 10;
-      if (state.refusal === "yes") score -= 20;
-
-      score = Math.min(100, Math.max(0, score));
-
-      setResult({
-        score,
-        type: score >= 80 ? 'strong' : score >= 50 ? 'moderate' : 'weak'
-      });
-      setIsSubmitting(false);
-      setStep(11); // Result screen
-    }, 1500);
+    submitEligibility.mutate(
+      {
+        data: {
+          destinationCountry: state.country,
+          visaPurpose: state.purpose,
+          ageRange: state.age,
+          maritalStatus: state.marital,
+          employmentStatus: state.employment,
+          monthlyIncome: state.income,
+          bankBalance: state.balance,
+          propertyOwnership: state.property === "yes",
+          previousTravel: [],
+          previousRefusals: state.refusal === "yes",
+          name: state.contact.name,
+          phone: state.contact.phone,
+          email: state.contact.email,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          setResult({ score: data.score, type: mapBandToType(data.band) });
+          setStep(11); // Result screen
+        },
+      }
+    );
   };
 
   const isStepValid = () => {
@@ -103,7 +113,7 @@ export default function EligibilityCheck() {
       case 7: return !!state.balance;
       case 8: return !!state.property;
       case 9: return !!state.refusal;
-      case 10: return state.contact.name.length > 2 && state.contact.phone.length > 8;
+      case 10: return state.contact.name.length > 2 && state.contact.phone.length > 8 && /\S+@\S+\.\S+/.test(state.contact.email);
       default: return true;
     }
   };
@@ -280,12 +290,22 @@ export default function EligibilityCheck() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-white/80">WhatsApp Number</label>
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       value={state.contact.phone}
                       onChange={e => dispatch({ type: 'SET_FIELD', field: 'contact', value: { ...state.contact, phone: e.target.value } })}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:border-primary focus:outline-none transition-colors"
                       placeholder="0300 1234567"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-white/80">Email</label>
+                    <input
+                      type="email"
+                      value={state.contact.email}
+                      onChange={e => dispatch({ type: 'SET_FIELD', field: 'contact', value: { ...state.contact, email: e.target.value } })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:border-primary focus:outline-none transition-colors"
+                      placeholder="john@example.com"
                     />
                   </div>
                 </div>
@@ -348,7 +368,7 @@ export default function EligibilityCheck() {
               <Button 
                 variant="ghost" 
                 onClick={prevStep} 
-                disabled={step === 1 || isSubmitting}
+                disabled={step === 1 || submitEligibility.isPending}
                 className="text-white/60 hover:text-white"
               >
                 <RiArrowLeftLine className="mr-2" /> Back
@@ -356,10 +376,10 @@ export default function EligibilityCheck() {
               
               <Button 
                 onClick={nextStep} 
-                disabled={!isStepValid() || isSubmitting}
+                disabled={!isStepValid() || submitEligibility.isPending}
                 className="gold-gradient-bg text-black font-semibold min-w-[120px]"
               >
-                {isSubmitting ? (
+                {submitEligibility.isPending ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
                     Analyzing...

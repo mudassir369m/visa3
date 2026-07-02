@@ -1,36 +1,29 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { useListBlogPosts } from "@workspace/api-client-react";
 
-const articles = [
-  {
-    id: 1,
-    cat: "Guide",
-    title: "How to Build a Strong Bank Statement for Visas",
-    time: "5 min read",
-    date: "Mar 1, 2026",
-    emoji: "🏦"
-  },
-  {
-    id: 2,
-    cat: "Tips",
-    title: "5 Common Reasons for USA B1/B2 Refusals",
-    time: "4 min read",
-    date: "Feb 20, 2026",
-    emoji: "❌"
-  },
-  {
-    id: 3,
-    cat: "Guide",
-    title: "Canada Super Visa vs. Regular Visit Visa",
-    time: "6 min read",
-    date: "Feb 5, 2026",
-    emoji: "🍁"
-  }
-];
+const CATEGORY_EMOJI: Record<string, string> = {
+  Guide: "📘",
+  Tips: "💡",
+};
 
 export default function BlogPreview() {
+  const { data: posts } = useListBlogPosts();
+
+  const articles = (posts ?? []).map((p) => ({
+    id: p.id,
+    cat: p.category,
+    title: p.title,
+    time: p.readTime,
+    date: new Date(p.createdAt ?? Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    emoji: CATEGORY_EMOJI[p.category] ?? "📰",
+    excerpt: p.excerpt,
+  }));
+
   const mainArticle = articles[0];
   const sideArticles = articles.slice(1);
+
+  if (!mainArticle) return null;
 
   return (
     <section className="py-24 bg-card border-t border-white/5">
@@ -70,7 +63,7 @@ export default function BlogPreview() {
                   {mainArticle.title}
                 </h3>
                 <p className="text-muted-foreground text-lg mb-6">
-                  Learn exactly what visa officers look for when assessing financial documents, and how to avoid the "unexplained deposits" rejection clause.
+                  {mainArticle.excerpt}
                 </p>
                 <span className="text-sm font-bold text-white group-hover:translate-x-2 transition-transform inline-block">
                   Read Article →

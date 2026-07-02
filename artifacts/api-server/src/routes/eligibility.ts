@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, eligibilitySubmissionsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "../middlewares/require-auth";
 
 const router = Router();
 
@@ -73,21 +74,21 @@ router.post("/", async (req, res) => {
 });
 
 // GET /api/eligibility
-router.get("/", async (_req, res) => {
+router.get("/", requireAuth, async (_req, res) => {
   const rows = await db.select().from(eligibilitySubmissionsTable).orderBy(eligibilitySubmissionsTable.createdAt);
   res.json(rows.map(mapSubmission));
 });
 
 // GET /api/eligibility/:id
-router.get("/:id", async (req, res) => {
-  const [row] = await db.select().from(eligibilitySubmissionsTable).where(eq(eligibilitySubmissionsTable.id, parseInt(req.params.id)));
+router.get("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.select().from(eligibilitySubmissionsTable).where(eq(eligibilitySubmissionsTable.id, parseInt(req.params.id as string)));
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapSubmission(row));
 });
 
 // PATCH /api/eligibility/:id
-router.patch("/:id", async (req, res) => {
-  const [row] = await db.update(eligibilitySubmissionsTable).set(req.body).where(eq(eligibilitySubmissionsTable.id, parseInt(req.params.id))).returning();
+router.patch("/:id", requireAuth, async (req, res) => {
+  const [row] = await db.update(eligibilitySubmissionsTable).set(req.body).where(eq(eligibilitySubmissionsTable.id, parseInt(req.params.id as string))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(mapSubmission(row));
 });

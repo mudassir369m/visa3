@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -11,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateLead } from "@workspace/api-client-react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -22,7 +22,7 @@ const formSchema = z.object({
 
 export default function Contact() {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createLead = useCreateLead();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -30,16 +30,35 @@ export default function Contact() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast({
-        title: "Message Sent!",
-        description: "We will get back to you within 24 hours.",
-      });
-      form.reset();
-    }, 1500);
+    createLead.mutate(
+      {
+        data: {
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          subject: values.visaType ? `Inquiry: ${values.visaType}` : "General Inquiry",
+          message: values.message,
+          source: "contact",
+          visaCountry: values.visaType || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Message Sent!",
+            description: "We will get back to you within 24 hours.",
+          });
+          form.reset();
+        },
+        onError: () => {
+          toast({
+            title: "Something went wrong",
+            description: "Please try again or reach out on WhatsApp.",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -137,8 +156,8 @@ export default function Contact() {
                       )}
                     />
 
-                    <Button type="submit" disabled={isSubmitting} className="w-full gold-gradient-bg text-black font-bold h-14 rounded-xl shadow-glow-gold hover:-translate-y-1 transition-transform">
-                      {isSubmitting ? "Sending..." : "Send Message"}
+                    <Button type="submit" disabled={createLead.isPending} className="w-full gold-gradient-bg text-black font-bold h-14 rounded-xl shadow-glow-gold hover:-translate-y-1 transition-transform">
+                      {createLead.isPending ? "Sending..." : "Send Message"}
                     </Button>
                   </form>
                 </Form>

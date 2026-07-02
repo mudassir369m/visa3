@@ -1,16 +1,21 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-
-const countries = [
-  { name: "UK", flag: "🇬🇧", slug: "uk", types: "Tourist, Business, Family Visit", time: "15 days", success: "98%" },
-  { name: "USA", flag: "🇺🇸", slug: "usa", types: "Tourist B1/B2, Business, Family", time: "45 days", success: "95%" },
-  { name: "Canada", flag: "🇨🇦", slug: "canada", types: "Tourist, Super Visa, ETA", time: "30 days", success: "96%" },
-  { name: "Australia", flag: "🇦🇺", slug: "australia", types: "Tourist, Business, Working Holiday", time: "25 days", success: "97%" },
-  { name: "Turkey", flag: "🇹🇷", slug: "turkey", types: "e-Visa, Tourist", time: "3 days", success: "99%" },
-  { name: "Schengen", flag: "🇪🇺", slug: "schengen", types: "Tourist, Business, Family", time: "15 days", success: "97%" }
-];
+import { useListVisas } from "@workspace/api-client-react";
 
 export default function CountryCards() {
+  const { data: visas, isLoading } = useListVisas();
+
+  const countries = (visas ?? [])
+    .filter((v) => v.published)
+    .map((v) => ({
+      name: v.country,
+      flag: v.flag,
+      slug: v.slug,
+      types: v.visaTypes.join(", "),
+      time: v.processingDays,
+      success: v.successRate,
+    }));
+
   return (
     <section className="py-24 bg-background relative overflow-hidden" id="visas">
       <div className="container">
@@ -35,6 +40,9 @@ export default function CountryCards() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isLoading && Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="glass-card rounded-2xl p-8 h-64 animate-pulse bg-white/5" />
+          ))}
           {countries.map((country, i) => (
             <Link key={country.slug} href={`/visa/${country.slug}`}>
               <motion.div

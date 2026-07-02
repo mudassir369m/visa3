@@ -4,24 +4,36 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useListTours } from "@workspace/api-client-react";
 
-const tours = [
-  { id: 1, title: "Umrah Package", dest: "🇸🇦", days: "7 Nights", price: "85,000", old: "95,000", tags: ["Visa", "Hotels", "Transport"], cat: "Umrah" },
-  { id: 2, title: "Europe Explorer", dest: "🇪🇺", days: "14 Nights", price: "350,000", old: "400,000", tags: ["Schengen", "Flights", "Guide"], cat: "Europe" },
-  { id: 3, title: "Turkey Discovery", dest: "🇹🇷", days: "8 Nights", price: "120,000", old: "145,000", tags: ["Bosphorus", "Cappadocia", "Flights"], cat: "Turkey" },
-  { id: 4, title: "UK Experience", dest: "🇬🇧", days: "10 Nights", price: "280,000", old: "310,000", tags: ["London", "Scotland", "Visa"], cat: "Europe" },
-  { id: 5, title: "Dubai Weekend", dest: "🇦🇪", days: "4 Nights", price: "65,000", old: "80,000", tags: ["Desert Safari", "Visa", "Hotel"], cat: "Middle East" },
-  { id: 6, title: "Bali Escape", dest: "🇮🇩", days: "8 Nights", price: "95,000", old: "115,000", tags: ["Resort", "Tours", "Flights"], cat: "Asia" },
-];
+const DEST_EMOJI: Record<string, string> = {
+  Umrah: "🇸🇦",
+  Europe: "🇪🇺",
+  Turkey: "🇹🇷",
+  "Middle East": "🇦🇪",
+  Asia: "🇮🇩",
+};
 
 const categories = ["All", "Umrah", "Europe", "Asia", "Middle East", "Turkey"];
 
 export default function ToursCarousel() {
   const [activeCat, setActiveCat] = useState("All");
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", loop: false, dragFree: true });
+  const { data: tourList, isLoading } = useListTours();
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  const tours = (tourList ?? []).map((t) => ({
+    id: t.id,
+    title: t.title,
+    dest: DEST_EMOJI[t.category] ?? "✈️",
+    days: `${t.nights} Nights`,
+    price: Number(t.price).toLocaleString(),
+    old: t.originalPrice ? Number(t.originalPrice).toLocaleString() : null,
+    tags: t.inclusions ?? [],
+    cat: t.category,
+  }));
 
   const filtered = tours.filter(t => activeCat === "All" || t.cat === activeCat);
 
@@ -64,6 +76,11 @@ export default function ToursCarousel() {
 
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex gap-6 pb-8">
+            {isLoading && Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex-[0_0_85%] sm:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
+                <div className="glass-card rounded-2xl h-96 animate-pulse bg-white/5" />
+              </div>
+            ))}
             {filtered.map((tour, i) => (
               <motion.div 
                 key={tour.id}
@@ -95,7 +112,9 @@ export default function ToursCarousel() {
                     
                     <div className="mt-auto flex items-end justify-between border-t border-white/5 pt-4">
                       <div>
-                        <p className="text-xs text-muted-foreground line-through decoration-red-500/50">PKR {tour.old}</p>
+                        {tour.old && (
+                          <p className="text-xs text-muted-foreground line-through decoration-red-500/50">PKR {tour.old}</p>
+                        )}
                         <p className="text-lg font-bold">PKR <span className="text-primary">{tour.price}</span></p>
                       </div>
                       <Button asChild variant="ghost" size="sm" className="text-xs font-semibold hover:bg-primary hover:text-black">

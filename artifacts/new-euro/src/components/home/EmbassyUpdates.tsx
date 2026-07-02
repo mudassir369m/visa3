@@ -1,13 +1,18 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-
-const updates = [
-  { id: 1, flag: "🇬🇧", date: "Feb 10, 2026", title: "UK Updates Student Visa Financial Requirements", desc: "The UK Home Office has announced new maintenance funds rules for international students applying for the Tier 4 visa." },
-  { id: 2, flag: "🇨🇦", date: "Jan 28, 2026", title: "Canada Processing Times Reduced", desc: "IRCC has successfully cleared backlogs, reducing average processing times for visitor visas from Pakistan by 15 days." },
-  { id: 3, flag: "🇪🇺", date: "Jan 15, 2026", title: "Schengen Digital Visa Implementation", desc: "Select Schengen states have begun transitioning to a digital visa sticker system for short-stay tourist applications." },
-];
+import { useListEmbassyUpdates } from "@workspace/api-client-react";
 
 export default function EmbassyUpdates() {
+  const { data: updateList } = useListEmbassyUpdates();
+
+  const updates = (updateList ?? []).map((u) => ({
+    id: u.id,
+    flag: u.flag,
+    date: new Date(u.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    title: u.headline,
+    desc: u.summary,
+  }));
+
   return (
     <section className="py-24 bg-background">
       <div className="container">
