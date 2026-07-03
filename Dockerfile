@@ -4,7 +4,7 @@
 # ============================================================
 
 # ---------- Stage 1: Install dependencies ----------
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 
 RUN apk add --no-cache libc6-compat python3 make g++
 RUN corepack enable && corepack prepare pnpm@latest --activate
