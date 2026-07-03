@@ -1,3 +1,5 @@
 - [New Euro project structure](new-euro-project.md) — pnpm monorepo: frontend at artifacts/new-euro, API at artifacts/api-server, Drizzle schema at lib/db, OpenAPI spec at lib/api-spec
 - [WebGL in Replit preview](webgl-replit.md) — Three.js WebGL fails in headless screenshot env; set server.hmr.overlay:false in vite.config.ts and wrap Canvas in WebGLErrorBoundary
 - [pnpm workspace @types resolution](pnpm-types.md) — @types/* packages must be explicit devDependencies of each artifact; pnpm virtual store path not auto-discovered by tsc
+- [api-client-react hook pattern](api-client-hooks.md) — hooks are hand-written (no generate script); add types to api.schemas.ts, add hooks to api.ts, then run tsc --build on api-client-react before frontend typecheck
+- [Global layout wiring](global-layout.md) — CustomCursor, LenisProvider, SocialRail, WhatsAppBubble all live in App.tsx only; main.tsx is bare (no duplicate providers)

@@ -5,9 +5,6 @@ import { Link } from "wouter";
 import AnnouncementBar from "@/components/home/AnnouncementBar";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import SocialRail from "@/components/layout/SocialRail";
-import WhatsAppBubble from "@/components/layout/WhatsAppBubble";
-
 // Home Sections
 import Hero from "@/components/home/Hero";
 import StatsStrip from "@/components/home/StatsStrip";
@@ -28,8 +25,6 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <AnnouncementBar />
       <Navbar />
-      <SocialRail />
-      <WhatsAppBubble />
       <main className="flex-1">
         <Hero />
         <StatsStrip />

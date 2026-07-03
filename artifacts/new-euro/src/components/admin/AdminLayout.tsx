@@ -38,6 +38,8 @@ const navItems = [
   { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
   { href: "/admin/users", label: "Admin Users", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart2 },
+  { href: "/admin/gallery", label: "Gallery", icon: Image },
+  { href: "/admin/team", label: "Team Members", icon: Users },
   { href: "/admin/settings", label: "Site Settings", icon: Settings },
 ];
 

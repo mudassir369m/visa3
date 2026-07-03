@@ -14,6 +14,9 @@ import newsletterRouter from "./newsletter";
 import settingsRouter from "./settings";
 import statsRouter from "./stats";
 import adminRouter from "./admin";
+import galleryRouter from "./gallery";
+import teamRouter from "./team";
+import successStoriesRouter from "./success-stories";
 import { requireAuth } from "../middlewares/require-auth";
 
 const router: IRouter = Router();
@@ -32,6 +35,9 @@ router.use("/embassy-updates", embassyUpdatesRouter);
 router.use("/newsletter", newsletterRouter);
 router.use("/settings", settingsRouter);
 router.use("/stats", statsRouter);
+router.use("/gallery", galleryRouter);
+router.use("/team", teamRouter);
+router.use("/success-stories", successStoriesRouter);
 router.use("/admin", requireAuth, adminRouter);
 
 export default router;

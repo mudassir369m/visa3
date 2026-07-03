@@ -502,3 +502,73 @@ export type ListToursParams = {
 category?: string;
 };
 
+
+// ── GALLERY ──────────────────────────────────────────────────────────────────
+
+export interface GalleryItem {
+  id: number;
+  imageUrl: string;
+  caption: string;
+  category?: string;
+  sortOrder?: number;
+  isPublished: boolean;
+  createdAt?: string;
+}
+
+export interface GalleryItemInput {
+  imageUrl: string;
+  caption: string;
+  category?: string;
+  sortOrder?: number;
+  isPublished?: boolean;
+}
+
+// ── TEAM ─────────────────────────────────────────────────────────────────────
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  /** @nullable */
+  bio?: string | null;
+  /** @nullable */
+  photoUrl?: string | null;
+  sortOrder?: number;
+  isPublished: boolean;
+  createdAt?: string;
+}
+
+export interface TeamMemberInput {
+  name: string;
+  role: string;
+  bio?: string;
+  photoUrl?: string;
+  sortOrder?: number;
+  isPublished?: boolean;
+}
+
+// ── SUCCESS STORIES ───────────────────────────────────────────────────────────
+
+export interface SuccessStory {
+  id: number;
+  title: string;
+  person: string;
+  country: string;
+  visaType: string;
+  /** @nullable */
+  videoUrl?: string | null;
+  /** @nullable */
+  thumbnail?: string | null;
+  isPublished: boolean;
+  createdAt?: string;
+}
+
+export interface SuccessStoryInput {
+  title: string;
+  person: string;
+  country: string;
+  visaType: string;
+  videoUrl?: string;
+  thumbnail?: string;
+  isPublished?: boolean;
+}

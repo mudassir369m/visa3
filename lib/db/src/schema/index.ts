@@ -11,3 +11,6 @@ export * from "./embassy-updates";
 export * from "./newsletter";
 export * from "./site-settings";
 export * from "./hero-slides";
+export * from "./gallery";
+export * from "./team-members";
+export * from "./success-stories";

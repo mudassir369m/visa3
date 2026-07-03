@@ -4,6 +4,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import React, { Suspense } from "react";
 import { ThemeProvider } from "@/lib/theme";
+import CustomCursor from "@/components/layout/CustomCursor";
+import LenisProvider from "@/components/layout/LenisProvider";
+import SocialRail from "@/components/layout/SocialRail";
+import WhatsAppBubble from "@/components/layout/WhatsAppBubble";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import EligibilityCheck from "@/pages/EligibilityCheck";
@@ -26,6 +30,8 @@ const AdminNewsletter = React.lazy(() => import("@/pages/admin/Newsletter"));
 const AdminUsers = React.lazy(() => import("@/pages/admin/Users"));
 const AdminAnalytics = React.lazy(() => import("@/pages/admin/Analytics"));
 const AdminSuccessStories = React.lazy(() => import("@/pages/admin/SuccessStories"));
+const AdminGallery = React.lazy(() => import("@/pages/admin/Gallery"));
+const AdminTeam = React.lazy(() => import("@/pages/admin/Team"));
 
 // Lazy Pages
 const About = React.lazy(() => import("@/pages/About"));
@@ -42,6 +48,11 @@ const Gallery = React.lazy(() => import("@/pages/Gallery"));
 const Privacy = React.lazy(() => import("@/pages/Privacy"));
 const Terms = React.lazy(() => import("@/pages/Terms"));
 const TourDetail = React.lazy(() => import("@/pages/TourDetail"));
+
+// Service sub-pages
+const AirTicketing = React.lazy(() => import("@/pages/services/AirTicketing"));
+const HotelBooking = React.lazy(() => import("@/pages/services/HotelBooking"));
+const TravelInsurance = React.lazy(() => import("@/pages/services/TravelInsurance"));
 
 // Visa Pages
 const VisaOverview = React.lazy(() => import("@/pages/visa/Overview"));
@@ -84,6 +95,11 @@ function Router() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/terms" component={Terms} />
 
+        {/* Service sub-pages */}
+        <Route path="/services/air-ticketing" component={AirTicketing} />
+        <Route path="/services/hotel-booking" component={HotelBooking} />
+        <Route path="/services/travel-insurance" component={TravelInsurance} />
+
         {/* Visa pages */}
         <Route path="/visa" component={VisaOverview} />
         <Route path="/visa/uk" component={UKVisa} />
@@ -111,6 +127,8 @@ function Router() {
         <Route path="/admin/newsletter" component={AdminNewsletter} />
         <Route path="/admin/users" component={AdminUsers} />
         <Route path="/admin/analytics" component={AdminAnalytics} />
+        <Route path="/admin/gallery" component={AdminGallery} />
+        <Route path="/admin/team" component={AdminTeam} />
         <Route path="/admin/settings" component={AdminSettings} />
 
         {/* Fallback */}
@@ -123,14 +141,19 @@ function Router() {
 function App() {
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <LenisProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <CustomCursor />
+              <SocialRail />
+              <WhatsAppBubble />
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </LenisProvider>
     </ThemeProvider>
   );
 }
